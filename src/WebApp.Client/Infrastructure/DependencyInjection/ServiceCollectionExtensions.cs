@@ -1,0 +1,71 @@
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using WebApp.Client.Constants;
+using WebApp.Client.Application.Auth;
+using WebApp.Client.Application.Auth.Interfaces;
+using WebApp.Client.Application.Expenses;
+using WebApp.Client.Application.Expenses.Interfaces;
+using WebApp.Client.ConsoleUi;
+using WebApp.Client.ConsoleUi.Auth;
+using WebApp.Client.ConsoleUi.Auth.Interfaces;
+using WebApp.Client.ConsoleUi.Expense;
+using WebApp.Client.ConsoleUi.Expense.Interfaces;
+using WebApp.Client.Infrastructure.ApiClients.Auth;
+using WebApp.Client.Infrastructure.ApiClients.Expenses;
+using WebApp.Client.Infrastructure.Configuration;
+using WebApp.Client.Infrastructure.Http;
+using WebApp.Client.Infrastructure.Session;
+using WebApp.Client.Infrastructure.Session.Interfaces;
+using WebApp.Client.Infrastructure.Token;
+using WebApp.Client.Infrastructure.Token.Interfaces;
+
+namespace WebApp.Client.Infrastructure.DependencyInjection;
+
+public static class ServiceCollectionExtensions
+{
+    public static IServiceCollection AddPersonalFinanceManagerClient(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddOptions<ApiOptions>()
+            .Bind(configuration.GetSection(AppConstants.Configuration.ApiSection))
+            .ValidateDataAnnotations();
+
+        services.AddOptions<AuthOptions>()
+            .Bind(configuration.GetSection(AppConstants.Configuration.AuthSection))
+            .ValidateDataAnnotations();
+
+        services.AddSingleton<ISessionStore, FileSessionStore>();
+        services.AddSingleton<ISessionAccessor, SessionAccessor>();
+        services.AddSingleton<IJwtUserIdReader, JwtUserIdReader>();
+
+        services.AddHttpClient(ApiHttpClientNames.Unauthenticated, (sp, client) =>
+        {
+            var options = sp.GetRequiredService<IOptions<ApiOptions>>().Value;
+            client.BaseAddress = new Uri(options.BaseUrl);
+        });
+
+        services.AddTransient<BearerTokenHandler>();
+        services.AddHttpClient(ApiHttpClientNames.Authenticated, (sp, client) =>
+        {
+            var options = sp.GetRequiredService<IOptions<ApiOptions>>().Value;
+            client.BaseAddress = new Uri(options.BaseUrl);
+        })
+        .AddHttpMessageHandler<BearerTokenHandler>();
+
+        services.AddSingleton<IAuthApi, AuthApi>();
+        services.AddSingleton<IExpenseApi, ExpenseApi>();
+
+        services.AddSingleton<IAuthUi, AuthUi>();
+        services.AddSingleton<IExpenseUi, ExpenseUi>();
+        services.AddSingleton<IRegisterUser, RegisterUser>();
+        services.AddSingleton<ILogin, Login>();
+        services.AddSingleton<ILogout, Logout>();
+        services.AddSingleton<IAddExpense, AddExpense>();
+        services.AddSingleton<IListExpenses, ListExpenses>();
+        services.AddSingleton<IDeleteExpense, DeleteExpense>();
+
+        services.AddSingleton<App>();
+        return services;
+    }
+}
+

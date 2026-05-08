@@ -1,0 +1,35 @@
+# Build outputs
+**/bin/
+**/obj/
+**/out/
+**/TestResults/
+
+# IDE/editor files
+**/.vs/
+**/.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Logs and temp files
+*.log
+*.tmp
+*.temp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# NuGet artifacts
+*.nupkg
+*.snupkg
+packages/
+
+# Local runtime/session state
+**/.pfm.session.json
+
+# Local config overrides
+appsettings.Development.json
+appsettings.Local.json
+
