@@ -6,13 +6,18 @@ using WebApp.Client.Application.Auth;
 using WebApp.Client.Application.Auth.Interfaces;
 using WebApp.Client.Application.Expenses;
 using WebApp.Client.Application.Expenses.Interfaces;
+using WebApp.Client.Application.Income;
+using WebApp.Client.Application.Income.Interfaces;
 using WebApp.Client.ConsoleUi;
 using WebApp.Client.ConsoleUi.Auth;
 using WebApp.Client.ConsoleUi.Auth.Interfaces;
 using WebApp.Client.ConsoleUi.Expense;
 using WebApp.Client.ConsoleUi.Expense.Interfaces;
+using WebApp.Client.ConsoleUi.Income;
+using WebApp.Client.ConsoleUi.Income.Interfaces;
 using WebApp.Client.Infrastructure.ApiClients.Auth;
 using WebApp.Client.Infrastructure.ApiClients.Expenses;
+using WebApp.Client.Infrastructure.ApiClients.Income;
 using WebApp.Client.Infrastructure.Configuration;
 using WebApp.Client.Infrastructure.Http;
 using WebApp.Client.Infrastructure.Session;
@@ -54,15 +59,20 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<IAuthApi, AuthApi>();
         services.AddSingleton<IExpenseApi, ExpenseApi>();
+        services.AddSingleton<IIncomeApi, IncomeApi>();
 
         services.AddSingleton<IAuthUi, AuthUi>();
         services.AddSingleton<IExpenseUi, ExpenseUi>();
+        services.AddSingleton<IIncomeUi, IncomeUi>();
         services.AddSingleton<IRegisterUser, RegisterUser>();
         services.AddSingleton<ILogin, Login>();
         services.AddSingleton<ILogout, Logout>();
         services.AddSingleton<IAddExpense, AddExpense>();
         services.AddSingleton<IListExpenses, ListExpenses>();
         services.AddSingleton<IDeleteExpense, DeleteExpense>();
+        services.AddSingleton<IAddIncome, AddIncome>();
+        services.AddSingleton<IListIncome, ListIncome>();
+        services.AddSingleton<IDeleteIncome, DeleteIncome>();
 
         services.AddSingleton<App>();
         return services;
