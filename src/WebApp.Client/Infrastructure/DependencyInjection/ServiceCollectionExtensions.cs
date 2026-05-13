@@ -1,9 +1,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using WebApp.Client.Constants;
 using WebApp.Client.Application.Auth;
 using WebApp.Client.Application.Auth.Interfaces;
+using WebApp.Client.Application.Budget;
+using WebApp.Client.Application.Budget.Interfaces;
+using WebApp.Client.Application.Category.Interfaces;
 using WebApp.Client.Application.Expenses;
 using WebApp.Client.Application.Expenses.Interfaces;
 using WebApp.Client.Application.Income;
@@ -11,11 +13,16 @@ using WebApp.Client.Application.Income.Interfaces;
 using WebApp.Client.ConsoleUi;
 using WebApp.Client.ConsoleUi.Auth;
 using WebApp.Client.ConsoleUi.Auth.Interfaces;
+using WebApp.Client.ConsoleUi.Budget;
+using WebApp.Client.ConsoleUi.Budget.Interfaces;
 using WebApp.Client.ConsoleUi.Expense;
 using WebApp.Client.ConsoleUi.Expense.Interfaces;
 using WebApp.Client.ConsoleUi.Income;
 using WebApp.Client.ConsoleUi.Income.Interfaces;
+using WebApp.Client.Constants;
 using WebApp.Client.Infrastructure.ApiClients.Auth;
+using WebApp.Client.Infrastructure.ApiClients.Budget;
+using WebApp.Client.Infrastructure.ApiClients.Category;
 using WebApp.Client.Infrastructure.ApiClients.Expenses;
 using WebApp.Client.Infrastructure.ApiClients.Income;
 using WebApp.Client.Infrastructure.Configuration;
@@ -60,10 +67,13 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IAuthApi, AuthApi>();
         services.AddSingleton<IExpenseApi, ExpenseApi>();
         services.AddSingleton<IIncomeApi, IncomeApi>();
+        services.AddSingleton<IBudgetApi, BudgetApi>();
+        services.AddSingleton<ICategoryApi, CategoryApi>();
 
         services.AddSingleton<IAuthUi, AuthUi>();
         services.AddSingleton<IExpenseUi, ExpenseUi>();
         services.AddSingleton<IIncomeUi, IncomeUi>();
+        services.AddSingleton<IBudgetUi, BudgetUi>();
         services.AddSingleton<IRegisterUser, RegisterUser>();
         services.AddSingleton<ILogin, Login>();
         services.AddSingleton<ILogout, Logout>();
@@ -73,6 +83,10 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IAddIncome, AddIncome>();
         services.AddSingleton<IListIncome, ListIncome>();
         services.AddSingleton<IDeleteIncome, DeleteIncome>();
+        services.AddSingleton<IAddBudget, AddBudget>();
+        services.AddSingleton<IListBudget, ListBudget>();
+        services.AddSingleton<IDeleteBudget, DeleteBudget>();
+        services.AddSingleton<IListCategories, ListCategory>();
 
         services.AddSingleton<App>();
         return services;

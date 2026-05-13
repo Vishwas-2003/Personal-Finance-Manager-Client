@@ -1,6 +1,7 @@
 using WebApp.Client.Application.Auth.Interfaces;
 using WebApp.Client.ConsoleUi.Auth.Interfaces;
 using WebApp.Client.ConsoleUi.Expense.Interfaces;
+using WebApp.Client.ConsoleUi.Budget.Interfaces;
 using WebApp.Client.ConsoleUi.Income.Interfaces;
 using WebApp.Client.ConsoleUi.Interfaces;
 using WebApp.Client.Constants;
@@ -15,7 +16,8 @@ public sealed class App(
     ILogout logout,
     IAuthUi authUi,
     IExpenseUi expenseUi,
-    IIncomeUi incomeUi)
+    IIncomeUi incomeUi,
+    IBudgetUi budgetUi)
 {
     private readonly IConsole _console = new SystemConsole();
     private InputReader Input => new(_console);
@@ -53,6 +55,10 @@ public sealed class App(
                 else if (choice == AppConstants.Values.IncomeChoice)
                 {
                     await incomeUi.RunAsync();
+                }
+                else if (choice == AppConstants.Values.BudgetChoice)
+                {
+                    await budgetUi.RunAsync();
                 }
                 else if (choice == AppConstants.Values.LogoutChoice)
                 {

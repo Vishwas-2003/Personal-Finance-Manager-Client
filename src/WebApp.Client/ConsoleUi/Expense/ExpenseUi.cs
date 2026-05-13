@@ -1,15 +1,17 @@
+using WebApp.Client.Application.Category.Interfaces;
 using WebApp.Client.Application.Expenses;
 using WebApp.Client.Application.Expenses.Interfaces;
-using WebApp.Client.Constants;
 using WebApp.Client.ConsoleUi.Expense.Interfaces;
 using WebApp.Client.ConsoleUi.Interfaces;
+using WebApp.Client.Constants;
 
 namespace WebApp.Client.ConsoleUi.Expense
 {
     public class ExpenseUi(
         IAddExpense addExpense,
         IListExpenses listExpenses,
-        IDeleteExpense deleteExpense)
+        IDeleteExpense deleteExpense,
+        IListCategories listCategories)
         : IExpenseUi
     {
         private readonly IConsole _console = new SystemConsole();
@@ -40,7 +42,7 @@ namespace WebApp.Client.ConsoleUi.Expense
                 }
                 else if (choice == AppConstants.Values.ListExpenseChoice)
                 {
-                    await ListExpense(); 
+                    await ListExpense();
                 }
                 else if (choice == AppConstants.Values.DeleteExpenseChoice)
                 {
@@ -52,7 +54,33 @@ namespace WebApp.Client.ConsoleUi.Expense
         private async Task AddExpense()
         {
             var amount = Input.RequiredDecimal(AppConstants.Prompts.Amount, AppConstants.Values.MinAmount);
-            var categoryId = Input.RequiredInt(AppConstants.Prompts.CategoryId, AppConstants.Values.MinCategoryId, int.MaxValue);
+            var categoryId = Input.RequiredInt(AppConstants.Prompts.CategoryIdWithViewOption, AppConstants.Values.MinCategoryIdForViewOption, int.MaxValue);
+
+            if (categoryId == 0)
+            {
+                var categories = await listCategories.ExecuteAsync(CancellationToken.None);
+                if (categories.Any())
+                {
+                    _console.WriteLine(AppConstants.Messages.AvailableCategories);
+                    _console.WriteLine(AppConstants.Messages.AvailableCategoriesHeader);
+
+                    foreach (var category in categories)
+                    {
+                        _console.WriteLine(string.Format(
+                            AppConstants.Messages.CategoriesRowFormat,
+                            category.Id,
+                            category.Name,
+                            category.CategoryType));
+                    }
+                }
+                else
+                {
+                    _console.WriteLine(AppConstants.Messages.NoCategoriesAvailable);
+                }
+
+                categoryId = Input.RequiredInt(AppConstants.Prompts.CategoryId, AppConstants.Values.MinCategoryId, int.MaxValue);
+            }
+
             var description = Input.OptionalString(AppConstants.Prompts.DescriptionOptional);
             var date = Input.RequiredDate(AppConstants.Prompts.Date);
             await addExpense.ExecuteAsync(new AddExpenseInput(amount, categoryId, description, date), CancellationToken.None);
@@ -82,7 +110,8 @@ namespace WebApp.Client.ConsoleUi.Expense
             }
         }
 
-        private async Task DeleteExpense() {
+        private async Task DeleteExpense()
+        {
             var expenseId = Input.RequiredInt(AppConstants.Prompts.ExpenseIdToDelete, AppConstants.Values.MinExpenseId, int.MaxValue);
             await deleteExpense.ExecuteAsync(expenseId, CancellationToken.None);
             _console.WriteLine(AppConstants.Messages.ExpenseDeleted);
