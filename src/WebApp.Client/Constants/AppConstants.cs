@@ -14,9 +14,10 @@ public static class AppConstants
     public static class Menus
     {
         public const string MainLoggedOut = "1) Register  2) Login  0) Exit";
-        public const string MainLoggedIn = "1) Expenses  2) Income  3) Logout  0) Exit";
+        public const string MainLoggedIn = "1) Expenses  2) Income  3) Budget  4) Logout  0) Exit";
         public const string Expense = "1) Add expense  2) List expenses  3) Delete expense  0) Back";
         public const string Income = "1) Add income  2) List income  3) Delete income  0) Back";
+        public const string Budget = "1) Add budget  2) List budgets  3) Delete budget  0) Back";
     }
 
     public static class Titles
@@ -27,6 +28,7 @@ public static class AppConstants
         public const string Login = "== Login ==";
         public const string ExpenseManagement = "== Expense Management ==";
         public const string IncomeManagement = "== Income Management ==";
+        public const string BudgetManagement = "== Budget Management ==";
     }
 
     public static class Prompts
@@ -39,6 +41,7 @@ public static class AppConstants
         public const string Email = "Email: ";
         public const string Password = "Password: ";
         public const string Amount = "Amount: ";
+        public const string CategoryIdWithViewOption = "Category id: (Enter 0 to view available categories)";
         public const string CategoryId = "Category id: ";
         public const string DescriptionOptional = "Description (optional): ";
         public const string Date = "Date (YYYY-MM-DD): ";
@@ -46,6 +49,9 @@ public static class AppConstants
         public const string IncomeIdToDelete = "Income id to delete: ";
         public const string IncomeSource = "Income source: ";
         public const string IncomeNotesOptional = "Notes (optional): ";
+        public const string BudgetLimitAmount = "Budget limit amount (> 0): ";
+        public const string BudgetSpentAmount = "Spent amount (0 if none): ";
+        public const string BudgetIdToDelete = "Budget id to delete: ";
     }
 
     public static class Messages
@@ -63,6 +69,11 @@ public static class AppConstants
         public const string IncomeDeleted = "Income deleted.";
         public const string IncomeHeader = "Id | Amount | Category | Type | Date | Source | Notes";
         public const string IncomeRowFormat = "{0} | {1} | {2} | {3} | {4} | {5} | {6}";
+        public const string BudgetAdded = "Budget added.";
+        public const string NoBudgets = "No budgets found.";
+        public const string BudgetDeleted = "Budget deleted.";
+        public const string BudgetHeader = "Id | Limit | Spent | Category | Type | Updated (UTC)";
+        public const string BudgetRowFormat = "{0} | {1} | {2} | {3} | {4} | {5}";
 
         public const string ApiErrorFormat = "API error ({0}): {1}";
         public const string ErrorFormat = "Error: {0}";
@@ -75,32 +86,45 @@ public static class AppConstants
         public const string MustLoginFirst = "You must login first.";
         public const string MissingUserIdInToken = "Login succeeded but the user id could not be read from the access token.";
         public const string EmptyResponseBody = "Empty response body.";
+        public const string AvailableCategoriesHeader = "Id | Name | Type";
+        public const string CategoriesRowFormat = "{0} | {1} | {2}";
+        public const string AvailableCategories = "Available Categories";
+        public const string NoCategoriesAvailable = "No categories available.";
     }
 
     public static class Values
     {
         public const int MenuMinChoice = 0;
-        public const int MainMenuMaxChoice = 3;
+        public const int MainMenuMaxChoice = 4;
         public const int ExpenseMenuMaxChoice = 3;
         public const int IncomeMenuMaxChoice = 3;
+        public const int BudgetMenuMaxChoice = 3;
         public const int RegisterChoice = 1;
         public const int LoginChoice = 2;
         public const int ExpenseChoice = 1;
         public const int IncomeChoice = 2;
-        public const int LogoutChoice = 3;
+        public const int BudgetChoice = 3;
+        public const int LogoutChoice = 4;
         public const int AddExpenseChoice = 1;
         public const int ListExpenseChoice = 2;
         public const int DeleteExpenseChoice = 3;
         public const int AddIncomeChoice = 1;
         public const int ListIncomeChoice = 2;
         public const int DeleteIncomeChoice = 3;
+        public const int AddBudgetChoice = 1;
+        public const int ListBudgetChoice = 2;
+        public const int DeleteBudgetChoice = 3;
         public const int MinAge = 1;
         public const int MaxAge = 120;
+        public const int MinCategoryIdForViewOption = 0;
         public const int MinCategoryId = 1;
         public const int MinIncomeCategoryId = 0;
         public const int MinExpenseId = 1;
         public const int MinIncomeId = 1;
+        public const int MinBudgetCategoryId = 0;
+        public const int MinBudgetId = 1;
         public const decimal MinAmount = 0;
+        public const decimal MinBudgetLimitAmount = 0.01m;
     }
 
     public static class Http
@@ -119,6 +143,7 @@ public static class AppConstants
         public const string UserId = "{userId}";
         public const string ExpenseId = "{expenseId}";
         public const string IncomeId = "{incomeId}";
+        public const string BudgetId = "{budgetId}";
     }
 }
 

@@ -1,15 +1,17 @@
+using WebApp.Client.Application.Category.Interfaces;
 using WebApp.Client.Application.Income;
 using WebApp.Client.Application.Income.Interfaces;
-using WebApp.Client.Constants;
 using WebApp.Client.ConsoleUi.Income.Interfaces;
 using WebApp.Client.ConsoleUi.Interfaces;
+using WebApp.Client.Constants;
 
 namespace WebApp.Client.ConsoleUi.Income;
 
 public sealed class IncomeUi(
     IAddIncome addIncome,
     IListIncome listIncome,
-    IDeleteIncome deleteIncome) : IIncomeUi
+    IDeleteIncome deleteIncome,
+    IListCategories listCategories) : IIncomeUi
 {
     private readonly IConsole _console = new SystemConsole();
     private InputReader Input => new(_console);
@@ -49,7 +51,33 @@ public sealed class IncomeUi(
     private async Task AddIncomeAsync()
     {
         var amount = Input.RequiredDecimal(AppConstants.Prompts.Amount, AppConstants.Values.MinAmount);
-        var categoryId = Input.RequiredInt(AppConstants.Prompts.CategoryId, AppConstants.Values.MinIncomeCategoryId, int.MaxValue);
+        var categoryId = Input.RequiredInt(AppConstants.Prompts.CategoryIdWithViewOption, AppConstants.Values.MinIncomeCategoryId, int.MaxValue);
+
+        if (categoryId == 0)
+        {
+            var categories = await listCategories.ExecuteAsync(CancellationToken.None);
+            if (categories.Any())
+            {
+                _console.WriteLine(AppConstants.Messages.AvailableCategories);
+                _console.WriteLine(AppConstants.Messages.AvailableCategoriesHeader);
+
+                foreach (var category in categories)
+                {
+                    _console.WriteLine(string.Format(
+                        AppConstants.Messages.CategoriesRowFormat,
+                        category.Id,
+                        category.Name,
+                        category.CategoryType));
+                }
+            }
+            else
+            {
+                _console.WriteLine(AppConstants.Messages.NoCategoriesAvailable);
+            }
+
+            categoryId = Input.RequiredInt(AppConstants.Prompts.CategoryId, AppConstants.Values.MinCategoryId, int.MaxValue);
+        }
+
         var date = Input.RequiredDate(AppConstants.Prompts.Date);
         var source = Input.RequiredString(AppConstants.Prompts.IncomeSource);
         var notes = Input.OptionalString(AppConstants.Prompts.IncomeNotesOptional);
