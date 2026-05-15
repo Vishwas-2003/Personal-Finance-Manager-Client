@@ -3,34 +3,34 @@ using WebApp.Client.Application.Income;
 
 namespace WebApp.Client.Application.Summary;
 
-public sealed record IncomeSummaryCategoryGroup(
+public sealed record IncomeSummarySubCategorySection(
     int CategoryId,
     string CategoryName,
     decimal Subtotal,
-    IReadOnlyList<IncomeItem> Items);
+    IReadOnlyList<IncomeItem> IncomeEntries);
 
-public sealed record IncomeSummaryCategoryTypeGroup(
+public sealed record IncomeSummaryCategoryTypeSection(
     int CategoryTypeId,
-    string CategoryType,
-    decimal Subtotal,
-    IReadOnlyList<IncomeSummaryCategoryGroup> Categories);
+    string CategoryTypeName,
+    decimal SectionTotal,
+    IReadOnlyList<IncomeSummarySubCategorySection> SubCategorySections);
 
 public sealed record IncomeSummary(
-    IReadOnlyList<IncomeSummaryCategoryTypeGroup> CategoryTypes,
+    IReadOnlyList<IncomeSummaryCategoryTypeSection> CategoryTypeSections,
     decimal TotalIncome);
 
-public sealed record ExpenseSummaryCategoryGroup(
+public sealed record ExpenseSummarySubCategorySection(
     int CategoryId,
     string CategoryName,
     decimal Subtotal,
-    IReadOnlyList<ExpenseItem> Items);
+    IReadOnlyList<ExpenseItem> ExpenseEntries);
 
-public sealed record ExpenseSummaryCategoryTypeGroup(
+public sealed record ExpenseSummaryCategoryTypeSection(
     int CategoryTypeId,
-    string CategoryType,
-    decimal Subtotal,
-    IReadOnlyList<ExpenseSummaryCategoryGroup> Categories);
+    string CategoryTypeName,
+    decimal SectionTotal,
+    IReadOnlyList<ExpenseSummarySubCategorySection> SubCategorySections);
 
 public sealed record ExpenseSummary(
-    IReadOnlyList<ExpenseSummaryCategoryTypeGroup> CategoryTypes,
+    IReadOnlyList<ExpenseSummaryCategoryTypeSection> CategoryTypeSections,
     decimal TotalExpense);

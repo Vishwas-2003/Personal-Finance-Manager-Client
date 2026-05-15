@@ -4,6 +4,7 @@ using WebApp.Client.Application.Category.Interfaces;
 using WebApp.Client.ConsoleUi.Budget.Interfaces;
 using WebApp.Client.ConsoleUi.Interfaces;
 using WebApp.Client.Constants;
+using WebApp.Client.Utilities;
 
 namespace WebApp.Client.ConsoleUi.Budget;
 
@@ -99,8 +100,8 @@ public sealed class BudgetUi(
             _console.WriteLine(string.Format(
                 AppConstants.Messages.BudgetRowFormat,
                 budget.Id,
-                budget.LimitAmount,
-                budget.SpentAmount,
+                NumberFormatUtility.FormatIndian(budget.LimitAmount),
+                NumberFormatUtility.FormatIndian(budget.SpentAmount),
                 budget.CategoryName,
                 budget.CategoryType,
                 budget.UpdatedAtUtc.ToUniversalTime().ToString("yyyy-MM-dd HH:mm'Z'")));

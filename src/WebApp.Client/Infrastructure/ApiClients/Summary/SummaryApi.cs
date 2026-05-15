@@ -21,7 +21,7 @@ public sealed class SummaryApi(IHttpClientFactory httpClientFactory) : ISummaryA
         var response = await client.GetAsync(path, cancellationToken);
         var payload = await JsonHttp.ReadOrThrowAsync<IncomeSummaryResponseModel>(response, cancellationToken);
         return new IncomeSummary(
-            payload.CategoryTypes.Select(ToIncomeTypeGroup).ToArray(),
+            payload.CategoryTypeSections.Select(ToIncomeCategoryTypeSection).ToArray(),
             payload.TotalIncome);
     }
 
@@ -32,37 +32,41 @@ public sealed class SummaryApi(IHttpClientFactory httpClientFactory) : ISummaryA
         var response = await client.GetAsync(path, cancellationToken);
         var payload = await JsonHttp.ReadOrThrowAsync<ExpenseSummaryResponseModel>(response, cancellationToken);
         return new ExpenseSummary(
-            payload.CategoryTypes.Select(ToExpenseTypeGroup).ToArray(),
+            payload.CategoryTypeSections.Select(ToExpenseCategoryTypeSection).ToArray(),
             payload.TotalExpense);
     }
 
-    private static IncomeSummaryCategoryTypeGroup ToIncomeTypeGroup(IncomeSummaryCategoryTypeGroupModel group) =>
+    private static IncomeSummaryCategoryTypeSection ToIncomeCategoryTypeSection(
+        IncomeSummaryCategoryTypeSectionModel section) =>
         new(
-            group.CategoryTypeId,
-            group.CategoryType,
-            group.Subtotal,
-            group.Categories.Select(ToIncomeCategoryGroup).ToArray());
+            section.CategoryTypeId,
+            section.CategoryTypeName,
+            section.SectionTotal,
+            section.SubCategorySections.Select(ToIncomeSubCategorySection).ToArray());
 
-    private static IncomeSummaryCategoryGroup ToIncomeCategoryGroup(IncomeSummaryCategoryGroupModel group) =>
+    private static IncomeSummarySubCategorySection ToIncomeSubCategorySection(
+        IncomeSummarySubCategorySectionModel section) =>
         new(
-            group.CategoryId,
-            group.CategoryName,
-            group.Subtotal,
-            group.Items.Select(ToIncomeItem).ToArray());
+            section.CategoryId,
+            section.CategoryName,
+            section.Subtotal,
+            section.IncomeEntries.Select(ToIncomeItem).ToArray());
 
-    private static ExpenseSummaryCategoryTypeGroup ToExpenseTypeGroup(ExpenseSummaryCategoryTypeGroupModel group) =>
+    private static ExpenseSummaryCategoryTypeSection ToExpenseCategoryTypeSection(
+        ExpenseSummaryCategoryTypeSectionModel section) =>
         new(
-            group.CategoryTypeId,
-            group.CategoryType,
-            group.Subtotal,
-            group.Categories.Select(ToExpenseCategoryGroup).ToArray());
+            section.CategoryTypeId,
+            section.CategoryTypeName,
+            section.SectionTotal,
+            section.SubCategorySections.Select(ToExpenseSubCategorySection).ToArray());
 
-    private static ExpenseSummaryCategoryGroup ToExpenseCategoryGroup(ExpenseSummaryCategoryGroupModel group) =>
+    private static ExpenseSummarySubCategorySection ToExpenseSubCategorySection(
+        ExpenseSummarySubCategorySectionModel section) =>
         new(
-            group.CategoryId,
-            group.CategoryName,
-            group.Subtotal,
-            group.Items.Select(ToExpenseItem).ToArray());
+            section.CategoryId,
+            section.CategoryName,
+            section.Subtotal,
+            section.ExpenseEntries.Select(ToExpenseItem).ToArray());
 
     private static IncomeItem ToIncomeItem(IncomeResponseModel income) =>
         new(

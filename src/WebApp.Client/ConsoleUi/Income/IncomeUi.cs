@@ -4,6 +4,7 @@ using WebApp.Client.Application.Income.Interfaces;
 using WebApp.Client.ConsoleUi.Income.Interfaces;
 using WebApp.Client.ConsoleUi.Interfaces;
 using WebApp.Client.Constants;
+using WebApp.Client.Utilities;
 
 namespace WebApp.Client.ConsoleUi.Income;
 
@@ -101,7 +102,7 @@ public sealed class IncomeUi(
             _console.WriteLine(string.Format(
                 AppConstants.Messages.IncomeRowFormat,
                 income.Id,
-                income.Amount,
+                NumberFormatUtility.FormatIndian(income.Amount),
                 income.CategoryName,
                 income.CategoryType,
                 income.Date.ToString(AppConstants.Formats.Date),

@@ -4,6 +4,7 @@ using WebApp.Client.Application.Expenses.Interfaces;
 using WebApp.Client.ConsoleUi.Expense.Interfaces;
 using WebApp.Client.ConsoleUi.Interfaces;
 using WebApp.Client.Constants;
+using WebApp.Client.Utilities;
 
 namespace WebApp.Client.ConsoleUi.Expense
 {
@@ -102,7 +103,7 @@ namespace WebApp.Client.ConsoleUi.Expense
                 _console.WriteLine(string.Format(
                     AppConstants.Messages.ExpenseRowFormat,
                     e.Id,
-                    e.Amount,
+                    NumberFormatUtility.FormatIndian(e.Amount),
                     e.CategoryName,
                     e.CategoryType,
                     e.Date.ToString(AppConstants.Formats.Date),
