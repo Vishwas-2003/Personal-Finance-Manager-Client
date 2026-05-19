@@ -39,6 +39,7 @@ public static class RouteConstants
     {
         public const string IncomeByUserId = "/api/Summary/income/{userId}";
         public const string ExpenseByUserId = "/api/Summary/expense/{userId}";
+        public const string BalanceByUserId = "/api/Summary/balance/{userId}";
     }
 }
 

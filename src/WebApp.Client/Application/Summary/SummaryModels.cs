@@ -34,3 +34,29 @@ public sealed record ExpenseSummaryCategoryTypeSection(
 public sealed record ExpenseSummary(
     IReadOnlyList<ExpenseSummaryCategoryTypeSection> CategoryTypeSections,
     decimal TotalExpense);
+
+public sealed record BalanceSummaryFilter(DateTime? FromDate, DateTime? ToDate);
+
+public sealed record BalanceSummaryCreditLine(
+    int Id,
+    decimal Amount,
+    DateTime Date,
+    string Source,
+    string? Notes,
+    string CategoryName,
+    string CategoryType);
+
+public sealed record BalanceSummaryDebitLine(
+    int Id,
+    decimal Amount,
+    DateTime Date,
+    string? Description,
+    string CategoryName,
+    string CategoryType);
+
+public sealed record BalanceSummary(
+    IReadOnlyList<BalanceSummaryCreditLine> Credits,
+    IReadOnlyList<BalanceSummaryDebitLine> Debits,
+    decimal TotalCredit,
+    decimal TotalDebit,
+    decimal Balance);

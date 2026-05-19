@@ -1,5 +1,6 @@
 using WebApp.Client.Application.Summary;
 using WebApp.Client.Application.Summary.Interfaces;
+using WebApp.Client.ConsoleUi;
 using WebApp.Client.ConsoleUi.Interfaces;
 using WebApp.Client.ConsoleUi.Summary.Interfaces;
 using WebApp.Client.Constants;
@@ -9,9 +10,11 @@ namespace WebApp.Client.ConsoleUi.Summary;
 
 public sealed class SummaryUi(
     IGetIncomeSummary getIncomeSummary,
-    IGetExpenseSummary getExpenseSummary) : ISummaryUi
+    IGetExpenseSummary getExpenseSummary,
+    IGetBalanceSummary getBalanceSummary) : ISummaryUi
 {
     private readonly IConsole _console = new SystemConsole();
+    private InputReader Input => new(_console);
 
     public async Task RunAsync()
     {
@@ -20,7 +23,7 @@ public sealed class SummaryUi(
             _console.WriteLine(string.Empty);
             _console.WriteLine(AppConstants.Titles.SummaryManagement);
             _console.WriteLine(AppConstants.Menus.Summary);
-            var choice = new InputReader(_console).RequiredInt(
+            var choice = Input.RequiredInt(
                 AppConstants.Prompts.ChooseOption,
                 AppConstants.Values.MenuMinChoice,
                 AppConstants.Values.SummaryMenuMaxChoice);
@@ -38,6 +41,10 @@ public sealed class SummaryUi(
             {
                 await ShowExpenseSummaryAsync();
             }
+            else if (choice == AppConstants.Values.BalanceSummaryChoice)
+            {
+                await ShowBalanceSummaryAsync();
+            }
         }
     }
 
@@ -51,6 +58,92 @@ public sealed class SummaryUi(
     {
         var summary = await getExpenseSummary.ExecuteAsync(CancellationToken.None);
         PrintExpenseHierarchy(summary);
+    }
+
+    private async Task ShowBalanceSummaryAsync()
+    {
+        var filter = ReadBalanceFilter();
+        var summary = await getBalanceSummary.ExecuteAsync(filter, CancellationToken.None);
+        PrintBalanceSummary(summary);
+    }
+
+    private BalanceSummaryFilter? ReadBalanceFilter()
+    {
+        DateTime? fromDate;
+        DateTime? toDate;
+        do
+        {
+            fromDate = Input.OptionalDate(AppConstants.Prompts.ExpenseFilterFromDateOptional);
+            toDate = Input.OptionalDate(AppConstants.Prompts.ExpenseFilterToDateOptional);
+            if (fromDate is not null && toDate is not null && fromDate.Value.Date > toDate.Value.Date)
+            {
+                _console.WriteLine(AppConstants.Messages.InvalidDateRange);
+            }
+            else
+            {
+                break;
+            }
+        }
+        while (true);
+
+        if (fromDate is null && toDate is null)
+        {
+            return null;
+        }
+
+        return new BalanceSummaryFilter(fromDate, toDate);
+    }
+
+    private void PrintBalanceSummary(BalanceSummary summary)
+    {
+        _console.WriteLine(AppConstants.Messages.BalanceSummaryCreditHeader);
+        if (summary.Credits.Count == 0)
+        {
+            _console.WriteLine(AppConstants.Messages.NoBalanceCredits);
+        }
+        else
+        {
+            _console.WriteLine(AppConstants.Messages.BalanceSummaryCreditDetailHeader);
+            foreach (var credit in summary.Credits)
+            {
+                _console.WriteLine(string.Format(
+                    AppConstants.Messages.BalanceSummaryCreditRowFormat,
+                    credit.Id,
+                    NumberFormatUtility.FormatIndian(credit.Amount),
+                    credit.Date.ToString(AppConstants.Formats.Date),
+                    credit.CategoryName,
+                    credit.CategoryType,
+                    credit.Source,
+                    credit.Notes));
+            }
+        }
+
+        _console.WriteLine(string.Empty);
+        _console.WriteLine(AppConstants.Messages.BalanceSummaryDebitHeader);
+        if (summary.Debits.Count == 0)
+        {
+            _console.WriteLine(AppConstants.Messages.NoBalanceDebits);
+        }
+        else
+        {
+            _console.WriteLine(AppConstants.Messages.BalanceSummaryDebitDetailHeader);
+            foreach (var debit in summary.Debits)
+            {
+                _console.WriteLine(string.Format(
+                    AppConstants.Messages.BalanceSummaryDebitRowFormat,
+                    debit.Id,
+                    NumberFormatUtility.FormatIndian(debit.Amount),
+                    debit.Date.ToString(AppConstants.Formats.Date),
+                    debit.CategoryName,
+                    debit.CategoryType,
+                    debit.Description));
+            }
+        }
+
+        _console.WriteLine(string.Empty);
+        _console.WriteLine(string.Format(AppConstants.Messages.BalanceSummaryTotalCreditFormat, NumberFormatUtility.FormatIndian(summary.TotalCredit)));
+        _console.WriteLine(string.Format(AppConstants.Messages.BalanceSummaryTotalDebitFormat, NumberFormatUtility.FormatIndian(summary.TotalDebit)));
+        _console.WriteLine(string.Format(AppConstants.Messages.BalanceSummaryBalanceFormat, NumberFormatUtility.FormatIndian(summary.Balance)));
     }
 
     private void PrintIncomeHierarchy(IncomeSummary summary)
