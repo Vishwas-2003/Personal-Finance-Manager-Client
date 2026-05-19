@@ -6,10 +6,10 @@ namespace WebApp.Client.Application.Expenses;
 
 public sealed class ListExpenses(IExpenseApi expenseApi, ISessionAccessor sessionAccessor) : IListExpenses
 {
-    public async Task<IReadOnlyList<ExpenseItem>> ExecuteAsync(CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<ExpenseItem>> ExecuteAsync(ExpenseListFilter? filter, CancellationToken cancellationToken)
     {
         var session = sessionAccessor.Current ?? throw new InvalidOperationException(AppConstants.Messages.MustLoginFirst);
-        return await expenseApi.GetByUserIdAsync(session.UserId, cancellationToken);
+        return await expenseApi.GetByUserIdAsync(session.UserId, filter, cancellationToken);
     }
 }
 

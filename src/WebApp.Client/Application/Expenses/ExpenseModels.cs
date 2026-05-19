@@ -6,6 +6,8 @@ public sealed record AddExpenseInput(
     string? Description,
     DateTime Date);
 
+public sealed record ExpenseListFilter(int? CategoryId, DateTime? FromDate, DateTime? ToDate);
+
 public sealed record ExpenseItem(
     int Id,
     decimal Amount,

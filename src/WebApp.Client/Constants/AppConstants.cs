@@ -48,6 +48,9 @@ public static class AppConstants
         public const string DescriptionOptional = "Description (optional): ";
         public const string Date = "Date (YYYY-MM-DD): ";
         public const string ExpenseIdToDelete = "Expense id to delete: ";
+        public const string ExpenseFilterCategoryOptional = "Filter by category id (optional, leave blank to skip, 0 to view categories): ";
+        public const string ExpenseFilterFromDateOptional = "Filter from date (optional, YYYY-MM-DD, leave blank to skip): ";
+        public const string ExpenseFilterToDateOptional = "Filter to date (optional, YYYY-MM-DD, leave blank to skip): ";
         public const string IncomeIdToDelete = "Income id to delete: ";
         public const string IncomeSource = "Income source: ";
         public const string IncomeNotesOptional = "Notes (optional): ";
@@ -63,6 +66,7 @@ public static class AppConstants
         public const string LoggedIn = "Logged in.";
         public const string ExpenseAdded = "Expense added.";
         public const string NoExpenses = "No expenses found.";
+        public const string NoExpensesForFilter = "No expenses found for the selected filter(s).";
         public const string ExpenseDeleted = "Expense deleted.";
         public const string ExpenseHeader = "Id | Amount | Category | Type | Date | Description";
         public const string ExpenseRowFormat = "{0} | {1} | {2} | {3} | {4} | {5}";
@@ -94,6 +98,7 @@ public static class AppConstants
         public const string NumberBetweenFormat = "Enter a number between {0} and {1}.";
         public const string NumberAtLeastFormat = "Enter a number >= {0}.";
         public const string InvalidDate = "Enter a valid date (example: 2026-05-07).";
+        public const string InvalidDateRange = "From date cannot be after to date.";
 
         public const string MustLoginFirst = "You must login first.";
         public const string MissingUserIdInToken = "Login succeeded but the user id could not be read from the access token.";
