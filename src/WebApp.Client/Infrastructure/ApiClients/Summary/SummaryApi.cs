@@ -36,6 +36,48 @@ public sealed class SummaryApi(IHttpClientFactory httpClientFactory) : ISummaryA
             payload.TotalExpense);
     }
 
+    public async Task<BalanceSummary> GetBalanceSummaryAsync(int userId, BalanceSummaryFilter? filter, CancellationToken cancellationToken)
+    {
+        var client = httpClientFactory.CreateClient(ApiHttpClientNames.Authenticated);
+        var path = RouteConstants.Summary.BalanceByUserId.Replace(AppConstants.RoutePlaceholders.UserId, userId.ToString());
+        path = AppendFilterQuery(path, filter);
+        var response = await client.GetAsync(path, cancellationToken);
+        var payload = await JsonHttp.ReadOrThrowAsync<BalanceSummaryResponseModel>(response, cancellationToken);
+        return new BalanceSummary(
+            payload.Credits.Select(ToCreditLine).ToArray(),
+            payload.Debits.Select(ToDebitLine).ToArray(),
+            payload.TotalCredit,
+            payload.TotalDebit,
+            payload.Balance);
+    }
+
+    private static string AppendFilterQuery(string path, BalanceSummaryFilter? filter)
+    {
+        if (filter is null)
+        {
+            return path;
+        }
+
+        var queryParts = new List<string>();
+        if (filter.FromDate is DateTime fromDate)
+        {
+            queryParts.Add($"filter.FromDate={Uri.EscapeDataString(fromDate.ToString(AppConstants.Formats.Date))}");
+        }
+
+        if (filter.ToDate is DateTime toDate)
+        {
+            queryParts.Add($"filter.ToDate={Uri.EscapeDataString(toDate.ToString(AppConstants.Formats.Date))}");
+        }
+
+        return queryParts.Count == 0 ? path : $"{path}?{string.Join("&", queryParts)}";
+    }
+
+    private static BalanceSummaryCreditLine ToCreditLine(BalanceSummaryCreditLineModel line) =>
+        new(line.Id, line.Amount, line.Date, line.Source, line.Notes, line.CategoryName, line.CategoryType);
+
+    private static BalanceSummaryDebitLine ToDebitLine(BalanceSummaryDebitLineModel line) =>
+        new(line.Id, line.Amount, line.Date, line.Description, line.CategoryName, line.CategoryType);
+
     private static IncomeSummaryCategoryTypeSection ToIncomeCategoryTypeSection(
         IncomeSummaryCategoryTypeSectionModel section) =>
         new(

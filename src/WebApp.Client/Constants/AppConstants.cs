@@ -18,7 +18,7 @@ public static class AppConstants
         public const string Expense = "1) Add expense  2) List expenses  3) Delete expense  0) Back";
         public const string Income = "1) Add income  2) List income  3) Delete income  0) Back";
         public const string Budget = "1) Add budget  2) List budgets  3) Delete budget  0) Back";
-        public const string Summary = "1) Income summary  2) Expense summary  0) Back";
+        public const string Summary = "1) Income summary  2) Expense summary  3) Balance summary  0) Back";
     }
 
     public static class Titles
@@ -90,6 +90,17 @@ public static class AppConstants
         public const string SummarySectionSubtotalFormat = "  Section total ({0}): {1}";
         public const string SummaryGrandTotalIncomeFormat = "=== Grand total income: {0} ===";
         public const string SummaryGrandTotalExpenseFormat = "=== Grand total expenses: {0} ===";
+        public const string BalanceSummaryCreditHeader = "=== Credit sheet (income) ===";
+        public const string BalanceSummaryCreditDetailHeader = "Id | Amount | Date | Category | Type | Source | Notes";
+        public const string BalanceSummaryCreditRowFormat = "{0} | {1} | {2} | {3} | {4} | {5} | {6}";
+        public const string BalanceSummaryDebitHeader = "=== Debit sheet (expenses) ===";
+        public const string BalanceSummaryDebitDetailHeader = "Id | Amount | Date | Category | Type | Description";
+        public const string BalanceSummaryDebitRowFormat = "{0} | {1} | {2} | {3} | {4} | {5}";
+        public const string BalanceSummaryTotalCreditFormat = "Total credit: {0}";
+        public const string BalanceSummaryTotalDebitFormat = "Total debit: {0}";
+        public const string BalanceSummaryBalanceFormat = "Balance (credit - debit): {0}";
+        public const string NoBalanceCredits = "No income entries in this period.";
+        public const string NoBalanceDebits = "No expense entries in this period.";
 
         public const string ApiErrorFormat = "API error ({0}): {1}";
         public const string ErrorFormat = "Error: {0}";
@@ -116,7 +127,7 @@ public static class AppConstants
         public const int ExpenseMenuMaxChoice = 3;
         public const int IncomeMenuMaxChoice = 3;
         public const int BudgetMenuMaxChoice = 3;
-        public const int SummaryMenuMaxChoice = 2;
+        public const int SummaryMenuMaxChoice = 3;
         public const int RegisterChoice = 1;
         public const int LoginChoice = 2;
         public const int ExpenseChoice = 1;
@@ -135,6 +146,7 @@ public static class AppConstants
         public const int DeleteBudgetChoice = 3;
         public const int IncomeSummaryChoice = 1;
         public const int ExpenseSummaryChoice = 2;
+        public const int BalanceSummaryChoice = 3;
         public const int MinAge = 1;
         public const int MaxAge = 120;
         public const int MinCategoryIdForViewOption = 0;

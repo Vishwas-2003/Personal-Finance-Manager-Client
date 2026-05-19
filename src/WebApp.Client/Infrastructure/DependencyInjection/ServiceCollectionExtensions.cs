@@ -96,6 +96,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IListCategories, ListCategory>();
         services.AddSingleton<IGetIncomeSummary, GetIncomeSummary>();
         services.AddSingleton<IGetExpenseSummary, GetExpenseSummary>();
+        services.AddSingleton<IGetBalanceSummary, GetBalanceSummary>();
 
         services.AddSingleton<App>();
         return services;
