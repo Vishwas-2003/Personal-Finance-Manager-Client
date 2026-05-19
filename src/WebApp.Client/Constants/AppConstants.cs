@@ -14,10 +14,11 @@ public static class AppConstants
     public static class Menus
     {
         public const string MainLoggedOut = "1) Register  2) Login  0) Exit";
-        public const string MainLoggedIn = "1) Expenses  2) Income  3) Budget  4) Logout  0) Exit";
+        public const string MainLoggedIn = "1) Expenses  2) Income  3) Budget 4) Summary 5) Logout  0) Exit";
         public const string Expense = "1) Add expense  2) List expenses  3) Delete expense  0) Back";
         public const string Income = "1) Add income  2) List income  3) Delete income  0) Back";
         public const string Budget = "1) Add budget  2) List budgets  3) Delete budget  0) Back";
+        public const string Summary = "1) Income summary  2) Expense summary  0) Back";
     }
 
     public static class Titles
@@ -29,6 +30,7 @@ public static class AppConstants
         public const string ExpenseManagement = "== Expense Management ==";
         public const string IncomeManagement = "== Income Management ==";
         public const string BudgetManagement = "== Budget Management ==";
+        public const string SummaryManagement = "== Summary ==";
     }
 
     public static class Prompts
@@ -74,6 +76,16 @@ public static class AppConstants
         public const string BudgetDeleted = "Budget deleted.";
         public const string BudgetHeader = "Id | Limit | Spent | Category | Type | Updated (UTC)";
         public const string BudgetRowFormat = "{0} | {1} | {2} | {3} | {4} | {5}";
+        public const string SummaryCategoryTypeHeader = "=== {0} (category) ===";
+        public const string SummaryCategoryHeader = "  -- {0} (sub-category) --";
+        public const string SummaryIncomeDetailHeader = "    Id | Amount | Date | Source | Notes";
+        public const string SummaryIncomeDetailRowFormat = "    {0} | {1} | {2} | {3} | {4}";
+        public const string SummaryExpenseDetailHeader = "    Id | Amount | Date | Description";
+        public const string SummaryExpenseDetailRowFormat = "    {0} | {1} | {2} | {3}";
+        public const string SummaryCategorySubtotalFormat = "    Subtotal ({0}): {1}";
+        public const string SummarySectionSubtotalFormat = "  Section total ({0}): {1}";
+        public const string SummaryGrandTotalIncomeFormat = "=== Grand total income: {0} ===";
+        public const string SummaryGrandTotalExpenseFormat = "=== Grand total expenses: {0} ===";
 
         public const string ApiErrorFormat = "API error ({0}): {1}";
         public const string ErrorFormat = "Error: {0}";
@@ -95,16 +107,18 @@ public static class AppConstants
     public static class Values
     {
         public const int MenuMinChoice = 0;
-        public const int MainMenuMaxChoice = 4;
+        public const int MainMenuMaxChoice = 5;
         public const int ExpenseMenuMaxChoice = 3;
         public const int IncomeMenuMaxChoice = 3;
         public const int BudgetMenuMaxChoice = 3;
+        public const int SummaryMenuMaxChoice = 2;
         public const int RegisterChoice = 1;
         public const int LoginChoice = 2;
         public const int ExpenseChoice = 1;
         public const int IncomeChoice = 2;
         public const int BudgetChoice = 3;
-        public const int LogoutChoice = 4;
+        public const int SummaryChoice = 4;
+        public const int LogoutChoice = 5;
         public const int AddExpenseChoice = 1;
         public const int ListExpenseChoice = 2;
         public const int DeleteExpenseChoice = 3;
@@ -114,6 +128,8 @@ public static class AppConstants
         public const int AddBudgetChoice = 1;
         public const int ListBudgetChoice = 2;
         public const int DeleteBudgetChoice = 3;
+        public const int IncomeSummaryChoice = 1;
+        public const int ExpenseSummaryChoice = 2;
         public const int MinAge = 1;
         public const int MaxAge = 120;
         public const int MinCategoryIdForViewOption = 0;

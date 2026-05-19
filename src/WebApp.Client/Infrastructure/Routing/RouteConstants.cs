@@ -34,5 +34,11 @@ public static class RouteConstants
     {
         public const string GetCategories = "/api/Category/get";
     }
+
+    public static class Summary
+    {
+        public const string IncomeByUserId = "/api/Summary/income/{userId}";
+        public const string ExpenseByUserId = "/api/Summary/expense/{userId}";
+    }
 }
 

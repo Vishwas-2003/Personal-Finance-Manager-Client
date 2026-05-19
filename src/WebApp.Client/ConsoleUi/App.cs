@@ -1,9 +1,10 @@
 using WebApp.Client.Application.Auth.Interfaces;
 using WebApp.Client.ConsoleUi.Auth.Interfaces;
-using WebApp.Client.ConsoleUi.Expense.Interfaces;
 using WebApp.Client.ConsoleUi.Budget.Interfaces;
+using WebApp.Client.ConsoleUi.Expense.Interfaces;
 using WebApp.Client.ConsoleUi.Income.Interfaces;
 using WebApp.Client.ConsoleUi.Interfaces;
+using WebApp.Client.ConsoleUi.Summary.Interfaces;
 using WebApp.Client.Constants;
 using WebApp.Client.Infrastructure.Http;
 using WebApp.Client.Infrastructure.Session.Interfaces;
@@ -17,7 +18,8 @@ public sealed class App(
     IAuthUi authUi,
     IExpenseUi expenseUi,
     IIncomeUi incomeUi,
-    IBudgetUi budgetUi)
+    IBudgetUi budgetUi,
+    ISummaryUi summaryUi)
 {
     private readonly IConsole _console = new SystemConsole();
     private InputReader Input => new(_console);
@@ -48,26 +50,25 @@ public sealed class App(
                     continue;
                 }
 
-                if (choice == AppConstants.Values.ExpenseChoice)
+                switch (choice)
                 {
-                    await expenseUi.RunAsync();
-                }
-                else if (choice == AppConstants.Values.IncomeChoice)
-                {
-                    await incomeUi.RunAsync();
-                }
-                else if (choice == AppConstants.Values.BudgetChoice)
-                {
-                    await budgetUi.RunAsync();
-                }
-                else if (choice == AppConstants.Values.LogoutChoice)
-                {
-                    await logout.ExecuteAsync(CancellationToken.None);
-                    _console.WriteLine(AppConstants.Messages.LoggedOut);
-                }
-                else
-                {
-                    return;
+                    case AppConstants.Values.ExpenseChoice:
+                        await expenseUi.RunAsync();
+                        break;
+                    case AppConstants.Values.IncomeChoice:
+                        await incomeUi.RunAsync();
+                        break;
+                    case AppConstants.Values.BudgetChoice:
+                        await budgetUi.RunAsync();
+                        break;
+                    case AppConstants.Values.SummaryChoice:
+                        await summaryUi.RunAsync();
+                        break;
+                    case AppConstants.Values.LogoutChoice:
+                        await logout.ExecuteAsync(CancellationToken.None);
+                        _console.WriteLine(AppConstants.Messages.LoggedOut);
+                        break;
+                    default: return;
                 }
             }
             catch (ApiException ex)
