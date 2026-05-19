@@ -72,5 +72,45 @@ public sealed class InputReader(IConsole console)
         var value = console.ReadLine()?.Trim();
         return string.IsNullOrWhiteSpace(value) ? null : value;
     }
+
+    public int? OptionalInt(string prompt, int minInclusive)
+    {
+        while (true)
+        {
+            console.Write(prompt);
+            var raw = console.ReadLine()?.Trim();
+            if (string.IsNullOrWhiteSpace(raw))
+            {
+                return null;
+            }
+
+            if (int.TryParse(raw, out var value) && value >= minInclusive)
+            {
+                return value;
+            }
+
+            console.WriteLine(string.Format(AppConstants.Messages.NumberAtLeastFormat, minInclusive));
+        }
+    }
+
+    public DateTime? OptionalDate(string prompt)
+    {
+        while (true)
+        {
+            console.Write(prompt);
+            var raw = console.ReadLine()?.Trim();
+            if (string.IsNullOrWhiteSpace(raw))
+            {
+                return null;
+            }
+
+            if (DateTime.TryParse(raw, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out var value))
+            {
+                return value;
+            }
+
+            console.WriteLine(AppConstants.Messages.InvalidDate);
+        }
+    }
 }
 

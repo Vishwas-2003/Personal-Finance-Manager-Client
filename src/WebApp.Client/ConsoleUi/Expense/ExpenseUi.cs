@@ -90,10 +90,11 @@ namespace WebApp.Client.ConsoleUi.Expense
 
         private async Task ListExpense()
         {
-            var items = await listExpenses.ExecuteAsync(CancellationToken.None);
+            var filter = await ReadListFilterAsync();
+            var items = await listExpenses.ExecuteAsync(filter, CancellationToken.None);
             if (items.Count == 0)
             {
-                _console.WriteLine(AppConstants.Messages.NoExpenses);
+                _console.WriteLine(filter is null ? AppConstants.Messages.NoExpenses : AppConstants.Messages.NoExpensesForFilter);
                 return;
             }
 
@@ -109,6 +110,64 @@ namespace WebApp.Client.ConsoleUi.Expense
                     e.Date.ToString(AppConstants.Formats.Date),
                     e.Description));
             }
+        }
+
+        private async Task<ExpenseListFilter?> ReadListFilterAsync()
+        {
+            var categoryId = Input.OptionalInt(
+                AppConstants.Prompts.ExpenseFilterCategoryOptional,
+                AppConstants.Values.MinCategoryIdForViewOption);
+
+            if (categoryId == 0)
+            {
+                var categories = await listCategories.ExecuteAsync(CancellationToken.None);
+                if (categories.Any())
+                {
+                    _console.WriteLine(AppConstants.Messages.AvailableCategories);
+                    _console.WriteLine(AppConstants.Messages.AvailableCategoriesHeader);
+
+                    foreach (var category in categories)
+                    {
+                        _console.WriteLine(string.Format(
+                            AppConstants.Messages.CategoriesRowFormat,
+                            category.Id,
+                            category.Name,
+                            category.CategoryType));
+                    }
+                }
+                else
+                {
+                    _console.WriteLine(AppConstants.Messages.NoCategoriesAvailable);
+                }
+
+                categoryId = Input.OptionalInt(
+                    AppConstants.Prompts.ExpenseFilterCategoryOptional,
+                    AppConstants.Values.MinCategoryId);
+            }
+
+            DateTime? fromDate;
+            DateTime? toDate;
+            do
+            {
+                fromDate = Input.OptionalDate(AppConstants.Prompts.ExpenseFilterFromDateOptional);
+                toDate = Input.OptionalDate(AppConstants.Prompts.ExpenseFilterToDateOptional);
+                if (fromDate is not null && toDate is not null && fromDate.Value.Date > toDate.Value.Date)
+                {
+                    _console.WriteLine(AppConstants.Messages.InvalidDateRange);
+                }
+                else
+                {
+                    break;
+                }
+            }
+            while (true);
+
+            if (categoryId is null && fromDate is null && toDate is null)
+            {
+                return null;
+            }
+
+            return new ExpenseListFilter(categoryId, fromDate, toDate);
         }
 
         private async Task DeleteExpense()
