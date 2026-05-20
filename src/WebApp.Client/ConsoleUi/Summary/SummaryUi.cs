@@ -1,6 +1,5 @@
 using WebApp.Client.Application.Summary;
 using WebApp.Client.Application.Summary.Interfaces;
-using WebApp.Client.ConsoleUi;
 using WebApp.Client.ConsoleUi.Interfaces;
 using WebApp.Client.ConsoleUi.Summary.Interfaces;
 using WebApp.Client.Constants;

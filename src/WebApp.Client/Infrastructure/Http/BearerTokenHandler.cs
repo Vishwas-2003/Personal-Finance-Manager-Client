@@ -27,17 +27,25 @@ public sealed class BearerTokenHandler(
             return response;
         }
 
+        response.Dispose();
+
         var refreshed = await TryRefreshAsync(session, cancellationToken);
         if (refreshed is null)
         {
-            return response;
+            await ClearSessionAsync(cancellationToken);
+            return JsonHttp.CreateSessionExpiredResponse();
         }
-
-        response.Dispose();
 
         var retry = await CloneAsync(request, cancellationToken);
         retry.Headers.Authorization = new AuthenticationHeaderValue(AppConstants.Http.BearerScheme, refreshed.AccessToken);
-        return await base.SendAsync(retry, cancellationToken);
+        var retryResponse = await base.SendAsync(retry, cancellationToken);
+
+        if (retryResponse.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            await ClearSessionAsync(cancellationToken);
+        }
+
+        return retryResponse;
     }
 
     private async Task<SessionModel?> TryRefreshAsync(SessionModel session, CancellationToken cancellationToken)
@@ -65,6 +73,12 @@ public sealed class BearerTokenHandler(
         }
     }
 
+    private async Task ClearSessionAsync(CancellationToken cancellationToken)
+    {
+        sessionAccessor.Set(null);
+        await sessionStore.ClearAsync(cancellationToken);
+    }
+
     private static async Task<HttpRequestMessage> CloneAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         var clone = new HttpRequestMessage(request.Method, request.RequestUri);
@@ -89,4 +103,3 @@ public sealed class BearerTokenHandler(
         return clone;
     }
 }
-

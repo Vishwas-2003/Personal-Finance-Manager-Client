@@ -5,6 +5,7 @@ using WebApp.Client.ConsoleUi.Expense.Interfaces;
 using WebApp.Client.ConsoleUi.Income.Interfaces;
 using WebApp.Client.ConsoleUi.Interfaces;
 using WebApp.Client.ConsoleUi.Summary.Interfaces;
+using WebApp.Client.ConsoleUi.User.Interfaces;
 using WebApp.Client.Constants;
 using WebApp.Client.Infrastructure.Http;
 using WebApp.Client.Infrastructure.Session.Interfaces;
@@ -19,7 +20,8 @@ public sealed class App(
     IExpenseUi expenseUi,
     IIncomeUi incomeUi,
     IBudgetUi budgetUi,
-    ISummaryUi summaryUi)
+    ISummaryUi summaryUi,
+    IUserUi userUi)
 {
     private readonly IConsole _console = new SystemConsole();
     private InputReader Input => new(_console);
@@ -64,6 +66,9 @@ public sealed class App(
                     case AppConstants.Values.SummaryChoice:
                         await summaryUi.RunAsync();
                         break;
+                    case AppConstants.Values.ProfileChoice:
+                        await userUi.RunAsync();
+                        break;
                     case AppConstants.Values.LogoutChoice:
                         await logout.ExecuteAsync(CancellationToken.None);
                         _console.WriteLine(AppConstants.Messages.LoggedOut);
@@ -71,15 +76,40 @@ public sealed class App(
                     default: return;
                 }
             }
-            catch (ApiException ex)
-            {
-                _console.WriteLine(string.Format(AppConstants.Messages.ApiErrorFormat, (int)ex.StatusCode, ex.Message));
-            }
             catch (Exception ex)
             {
-                _console.WriteLine(string.Format(AppConstants.Messages.ErrorFormat, ex.Message));
+                if (!await HandleExceptionAsync(ex))
+                {
+                    throw;
+                }
             }
         }
+    }
+
+    private async Task<bool> HandleExceptionAsync(Exception ex)
+    {
+        var sessionExpired = ExceptionHelper.FindSessionExpired(ex);
+        if (sessionExpired is not null)
+        {
+            await logout.ExecuteAsync(CancellationToken.None);
+            _console.WriteLine(sessionExpired.Message);
+            return true;
+        }
+
+        if (ExceptionHelper.IsConnectionError(ex))
+        {
+            _console.WriteLine(AppConstants.Messages.SomethingWentWrong);
+            return true;
+        }
+
+        if (ex is ApiException apiEx)
+        {
+            _console.WriteLine(string.Format(AppConstants.Messages.ApiErrorFormat, (int)apiEx.StatusCode, apiEx.Message));
+            return true;
+        }
+
+        _console.WriteLine(AppConstants.Messages.SomethingWentWrong);
+        return true;
     }
 
     private async Task LoadSessionAsync()
@@ -88,4 +118,3 @@ public sealed class App(
         sessionAccessor.Set(session);
     }
 }
-
