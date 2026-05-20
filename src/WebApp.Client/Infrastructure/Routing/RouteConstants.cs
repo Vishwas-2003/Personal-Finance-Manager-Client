@@ -41,5 +41,10 @@ public static class RouteConstants
         public const string ExpenseByUserId = "/api/Summary/expense/{userId}";
         public const string BalanceByUserId = "/api/Summary/balance/{userId}";
     }
+
+    public static class User
+    {
+        public const string GetByUserId = "/api/User/get/{userId}";
+    }
 }
 

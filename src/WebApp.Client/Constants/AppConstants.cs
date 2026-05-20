@@ -14,7 +14,7 @@ public static class AppConstants
     public static class Menus
     {
         public const string MainLoggedOut = "1) Register  2) Login  0) Exit";
-        public const string MainLoggedIn = "1) Expenses  2) Income  3) Budget 4) Summary 5) Logout  0) Exit";
+        public const string MainLoggedIn = "1) Expenses  2) Income  3) Budget  4) Summary  5) Profile  6) Logout  0) Exit";
         public const string Expense = "1) Add expense  2) List expenses  3) Delete expense  0) Back";
         public const string Income = "1) Add income  2) List income  3) Delete income  0) Back";
         public const string Budget = "1) Add budget  2) List budgets  3) Delete budget  0) Back";
@@ -31,6 +31,7 @@ public static class AppConstants
         public const string IncomeManagement = "== Income Management ==";
         public const string BudgetManagement = "== Budget Management ==";
         public const string SummaryManagement = "== Summary ==";
+        public const string UserProfile = "== User Profile ==";
     }
 
     public static class Prompts
@@ -62,6 +63,7 @@ public static class AppConstants
     public static class Messages
     {
         public const string LoggedOut = "Logged out.";
+        public const string SessionExpired = "Your session has expired. Please login again.";
         public const string RegisteredAndLoggedIn = "Registered and logged in.";
         public const string LoggedIn = "Logged in.";
         public const string ExpenseAdded = "Expense added.";
@@ -104,6 +106,7 @@ public static class AppConstants
 
         public const string ApiErrorFormat = "API error ({0}): {1}";
         public const string ErrorFormat = "Error: {0}";
+        public const string SomethingWentWrong = "Something went wrong. Please check that the server is running and try again.";
 
         public const string RequiredValue = "Value is required.";
         public const string NumberBetweenFormat = "Enter a number between {0} and {1}.";
@@ -118,12 +121,18 @@ public static class AppConstants
         public const string CategoriesRowFormat = "{0} | {1} | {2}";
         public const string AvailableCategories = "Available Categories";
         public const string NoCategoriesAvailable = "No categories available.";
+        public const string UserProfileIdFormat = "Id: {0}";
+        public const string UserProfileNameFormat = "Name: {0}";
+        public const string UserProfileMobileFormat = "Mobile: {0}";
+        public const string UserProfileAgeFormat = "Age: {0}";
+        public const string UserProfileEmailFormat = "Email: {0}";
+        public const string UserProfileAddressFormat = "Address: {0}";
     }
 
     public static class Values
     {
         public const int MenuMinChoice = 0;
-        public const int MainMenuMaxChoice = 5;
+        public const int MainMenuMaxChoice = 6;
         public const int ExpenseMenuMaxChoice = 3;
         public const int IncomeMenuMaxChoice = 3;
         public const int BudgetMenuMaxChoice = 3;
@@ -134,7 +143,8 @@ public static class AppConstants
         public const int IncomeChoice = 2;
         public const int BudgetChoice = 3;
         public const int SummaryChoice = 4;
-        public const int LogoutChoice = 5;
+        public const int ProfileChoice = 5;
+        public const int LogoutChoice = 6;
         public const int AddExpenseChoice = 1;
         public const int ListExpenseChoice = 2;
         public const int DeleteExpenseChoice = 3;
@@ -164,6 +174,11 @@ public static class AppConstants
     {
         public const string JsonMediaType = "application/json";
         public const string BearerScheme = "Bearer";
+    }
+
+    public static class ErrorCodes
+    {
+        public const string SessionExpired = "SESSION_EXPIRED";
     }
 
     public static class Formats
