@@ -7,7 +7,6 @@ using WebApp.Client.ConsoleUi.Interfaces;
 using WebApp.Client.ConsoleUi.Summary.Interfaces;
 using WebApp.Client.ConsoleUi.User.Interfaces;
 using WebApp.Client.Constants;
-using WebApp.Client.Infrastructure.Http;
 using WebApp.Client.Infrastructure.Session.Interfaces;
 
 namespace WebApp.Client.ConsoleUi;
@@ -21,7 +20,8 @@ public sealed class App(
     IIncomeUi incomeUi,
     IBudgetUi budgetUi,
     ISummaryUi summaryUi,
-    IUserUi userUi)
+    IUserUi userUi,
+    IUiExceptionHandler exceptionHandler)
 {
     private readonly IConsole _console = new SystemConsole();
     private InputReader Input => new(_console);
@@ -78,38 +78,12 @@ public sealed class App(
             }
             catch (Exception ex)
             {
-                if (!await HandleExceptionAsync(ex))
+                if (!await exceptionHandler.TryHandleAsync(ex))
                 {
                     throw;
                 }
             }
         }
-    }
-
-    private async Task<bool> HandleExceptionAsync(Exception ex)
-    {
-        var sessionExpired = ExceptionHelper.FindSessionExpired(ex);
-        if (sessionExpired is not null)
-        {
-            await logout.ExecuteAsync(CancellationToken.None);
-            _console.WriteLine(sessionExpired.Message);
-            return true;
-        }
-
-        if (ExceptionHelper.IsConnectionError(ex))
-        {
-            _console.WriteLine(AppConstants.Messages.SomethingWentWrong);
-            return true;
-        }
-
-        if (ex is ApiException apiEx)
-        {
-            _console.WriteLine(string.Format(AppConstants.Messages.ApiErrorFormat, (int)apiEx.StatusCode, apiEx.Message));
-            return true;
-        }
-
-        _console.WriteLine(AppConstants.Messages.SomethingWentWrong);
-        return true;
     }
 
     private async Task LoadSessionAsync()

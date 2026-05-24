@@ -1,5 +1,6 @@
 using WebApp.Client.Application.Summary.Interfaces;
 using WebApp.Client.Constants;
+using WebApp.Client.Infrastructure.Http;
 using WebApp.Client.Infrastructure.Session.Interfaces;
 
 namespace WebApp.Client.Application.Summary;
@@ -8,7 +9,7 @@ public sealed class GetExpenseSummary(ISummaryApi summaryApi, ISessionAccessor s
 {
     public async Task<ExpenseSummary> ExecuteAsync(CancellationToken cancellationToken)
     {
-        var session = sessionAccessor.Current ?? throw new InvalidOperationException(AppConstants.Messages.MustLoginFirst);
+        var session = sessionAccessor.Current ?? throw new MustLoginException(AppConstants.Messages.MustLoginFirst);
         return await summaryApi.GetExpenseSummaryAsync(session.UserId, cancellationToken);
     }
 }

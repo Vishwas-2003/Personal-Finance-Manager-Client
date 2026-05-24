@@ -1,5 +1,6 @@
 using WebApp.Client.Application.Budget.Interfaces;
 using WebApp.Client.Constants;
+using WebApp.Client.Infrastructure.Http;
 using WebApp.Client.Infrastructure.Session.Interfaces;
 
 namespace WebApp.Client.Application.Budget;
@@ -8,7 +9,7 @@ public sealed class AddBudget(IBudgetApi budgetApi, ISessionAccessor sessionAcce
 {
     public async Task ExecuteAsync(AddBudgetInput input, CancellationToken cancellationToken)
     {
-        var session = sessionAccessor.Current ?? throw new InvalidOperationException(AppConstants.Messages.MustLoginFirst);
+        var session = sessionAccessor.Current ?? throw new MustLoginException(AppConstants.Messages.MustLoginFirst);
         await budgetApi.AddAsync(session.UserId, input, cancellationToken);
     }
 }

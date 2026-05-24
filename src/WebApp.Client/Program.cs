@@ -2,11 +2,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using WebApp.Client.Application.Auth.Interfaces;
-using WebApp.Client.Constants;
 using WebApp.Client.ConsoleUi;
+using WebApp.Client.ConsoleUi.Interfaces;
+using WebApp.Client.Constants;
 using WebApp.Client.Infrastructure.DependencyInjection;
-using WebApp.Client.Infrastructure.Http;
 
 var host = Host.CreateDefaultBuilder(args)
     .ConfigureAppConfiguration((context, config) =>
@@ -26,7 +25,7 @@ var host = Host.CreateDefaultBuilder(args)
     .Build();
 
 var app = host.Services.GetRequiredService<App>();
-var logout = host.Services.GetRequiredService<ILogout>();
+var exceptionHandler = host.Services.GetRequiredService<IUiExceptionHandler>();
 
 try
 {
@@ -34,14 +33,5 @@ try
 }
 catch (Exception ex)
 {
-    var sessionExpired = ExceptionHelper.FindSessionExpired(ex);
-    if (sessionExpired is not null)
-    {
-        await logout.ExecuteAsync(CancellationToken.None);
-        Console.WriteLine(sessionExpired.Message);
-    }
-    else
-    {
-        Console.WriteLine(AppConstants.Messages.SomethingWentWrong);
-    }
+    await exceptionHandler.TryHandleAsync(ex);
 }
