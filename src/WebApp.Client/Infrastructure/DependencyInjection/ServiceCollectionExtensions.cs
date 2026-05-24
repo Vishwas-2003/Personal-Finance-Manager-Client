@@ -16,6 +16,7 @@ using WebApp.Client.Application.User;
 using WebApp.Client.Application.User.Interfaces;
 using WebApp.Client.ConsoleUi;
 using WebApp.Client.ConsoleUi.Auth;
+using WebApp.Client.ConsoleUi.Interfaces;
 using WebApp.Client.ConsoleUi.Auth.Interfaces;
 using WebApp.Client.ConsoleUi.Budget;
 using WebApp.Client.ConsoleUi.Budget.Interfaces;
@@ -82,6 +83,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ISummaryApi, SummaryApi>();
         services.AddSingleton<IUserApi, UserApi>();
 
+        services.AddSingleton<IUiExceptionHandler, UiExceptionHandler>();
         services.AddSingleton<IAuthUi, AuthUi>();
         services.AddSingleton<IExpenseUi, ExpenseUi>();
         services.AddSingleton<IIncomeUi, IncomeUi>();

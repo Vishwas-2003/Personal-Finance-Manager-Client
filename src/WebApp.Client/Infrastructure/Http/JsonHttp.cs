@@ -72,12 +72,38 @@ public static class JsonHttp
 
     private static Exception CreateException(HttpStatusCode statusCode, string? body, string? reasonPhrase)
     {
+        var error = TryParseApiError(body);
+        if (error is not null && !string.IsNullOrWhiteSpace(error.Code))
+        {
+            return CreateExceptionFromApiError(statusCode, error);
+        }
+
         if (statusCode == HttpStatusCode.Unauthorized)
         {
             return CreateSessionExpiredException(body);
         }
 
         return new ApiException(statusCode, string.IsNullOrWhiteSpace(body) ? reasonPhrase : body);
+    }
+
+    private static Exception CreateExceptionFromApiError(HttpStatusCode statusCode, ApiErrorResponseModel error)
+    {
+        return error.Code switch
+        {
+            var code when code == AppConstants.ErrorCodes.SessionExpired =>
+                new SessionExpiredException(error.Message),
+            var code when code == AppConstants.ErrorCodes.NotFound =>
+                new NotFoundException(error.Message),
+            var code when code == AppConstants.ErrorCodes.Conflict =>
+                new ConflictException(error.Message),
+            var code when code == AppConstants.ErrorCodes.BadRequest =>
+                new BadRequestException(error.Message),
+            var code when code == AppConstants.ErrorCodes.Unauthorized =>
+                new ApiException(HttpStatusCode.Unauthorized, error.Message),
+            var code when code == AppConstants.ErrorCodes.InternalError =>
+                new ApiException(HttpStatusCode.InternalServerError, error.Message),
+            _ => new ApiException(statusCode, error.Message)
+        };
     }
 
     public static SessionExpiredException CreateSessionExpiredException(string? body)
