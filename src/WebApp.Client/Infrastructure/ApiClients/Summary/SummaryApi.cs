@@ -120,7 +120,8 @@ public sealed class SummaryApi(IHttpClientFactory httpClientFactory) : ISummaryA
             income.Date,
             income.Source,
             income.Notes,
-            income.CreatedAtUtc);
+            income.CreatedAtUtc,
+            income.InActive);
 
     private static ExpenseItem ToExpenseItem(ExpenseResponseModel expense) =>
         new(
@@ -131,5 +132,6 @@ public sealed class SummaryApi(IHttpClientFactory httpClientFactory) : ISummaryA
             expense.Category.CategoryType,
             expense.Description,
             expense.Date,
-            expense.CreatedAtUtc);
+            expense.CreatedAtUtc,
+            expense.InActive);
 }

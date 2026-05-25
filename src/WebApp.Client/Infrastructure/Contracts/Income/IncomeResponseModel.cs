@@ -8,6 +8,7 @@ public sealed class IncomeResponseModel
     public string? Notes { get; init; }
     public DateTime Date { get; init; }
     public DateTime CreatedAtUtc { get; init; }
+    public bool InActive { get; init; }
     public IncomeCategoryResponseModel Category { get; init; } = new();
 }
 

@@ -10,7 +10,8 @@ namespace WebApp.Client.ConsoleUi.Summary;
 public sealed class SummaryUi(
     IGetIncomeSummary getIncomeSummary,
     IGetExpenseSummary getExpenseSummary,
-    IGetBalanceSummary getBalanceSummary) : ISummaryUi
+    IGetBalanceSummary getBalanceSummary,
+    IConsoleClearCoordinator consoleClearCoordinator) : ISummaryUi
 {
     private readonly IConsole _console = new SystemConsole();
     private InputReader Input => new(_console);
@@ -19,13 +20,12 @@ public sealed class SummaryUi(
     {
         while (true)
         {
-            _console.WriteLine(string.Empty);
-            _console.WriteLine(AppConstants.Titles.SummaryManagement);
-            _console.WriteLine(AppConstants.Menus.Summary);
-            var choice = Input.RequiredInt(
+            PrintSummaryMenu();
+            var choice = Input.RequiredMenuChoice(
                 AppConstants.Prompts.ChooseOption,
                 AppConstants.Values.MenuMinChoice,
-                AppConstants.Values.SummaryMenuMaxChoice);
+                AppConstants.Values.SummaryMenuMaxChoice,
+                ClearAndRedrawSummaryMenu);
 
             if (choice == AppConstants.Values.MenuMinChoice)
             {
@@ -45,6 +45,19 @@ public sealed class SummaryUi(
                 await ShowBalanceSummaryAsync();
             }
         }
+    }
+
+    private void PrintSummaryMenu()
+    {
+        _console.WriteLine(string.Empty);
+        _console.WriteLine(AppConstants.Titles.SummaryManagement, ConsoleMessageKind.Title);
+        _console.WriteLine(AppConstants.Menus.Summary, ConsoleMessageKind.Menu);
+    }
+
+    private void ClearAndRedrawSummaryMenu()
+    {
+        consoleClearCoordinator.ClearScreen();
+        PrintSummaryMenu();
     }
 
     private async Task ShowIncomeSummaryAsync()
@@ -68,6 +81,11 @@ public sealed class SummaryUi(
 
     private BalanceSummaryFilter? ReadBalanceFilter()
     {
+        if (Input.ShouldSkipAllFilters(AppConstants.Prompts.SkipAllFilters))
+        {
+            return null;
+        }
+
         DateTime? fromDate;
         DateTime? toDate;
         do
@@ -76,7 +94,7 @@ public sealed class SummaryUi(
             toDate = Input.OptionalDate(AppConstants.Prompts.ExpenseFilterToDateOptional);
             if (fromDate is not null && toDate is not null && fromDate.Value.Date > toDate.Value.Date)
             {
-                _console.WriteLine(AppConstants.Messages.InvalidDateRange);
+                _console.WriteLine(AppConstants.Messages.InvalidDateRange, ConsoleMessageKind.Warning);
             }
             else
             {
@@ -95,73 +113,71 @@ public sealed class SummaryUi(
 
     private void PrintBalanceSummary(BalanceSummary summary)
     {
-        _console.WriteLine(AppConstants.Messages.BalanceSummaryCreditHeader);
+        _console.WriteLine(AppConstants.Messages.BalanceSummaryCreditHeader, ConsoleMessageKind.Title);
         if (summary.Credits.Count == 0)
         {
-            _console.WriteLine(AppConstants.Messages.NoBalanceCredits);
+            _console.WriteLine(AppConstants.Messages.NoBalanceCredits, ConsoleMessageKind.Muted);
         }
         else
         {
-            _console.WriteLine(AppConstants.Messages.BalanceSummaryCreditDetailHeader);
-            foreach (var credit in summary.Credits)
+            var headers = new[] { "Id", "Amount", "Date", "Category", "Type", "Source", "Notes" };
+            var rows = summary.Credits.Select(credit => new[]
             {
-                _console.WriteLine(string.Format(
-                    AppConstants.Messages.BalanceSummaryCreditRowFormat,
-                    credit.Id,
-                    NumberFormatUtility.FormatIndian(credit.Amount),
-                    credit.Date.ToString(AppConstants.Formats.Date),
-                    credit.CategoryName,
-                    credit.CategoryType,
-                    credit.Source,
-                    credit.Notes));
-            }
+                credit.Id.ToString(),
+                NumberFormatUtility.FormatIndian(credit.Amount),
+                credit.Date.ToString(AppConstants.Formats.Date),
+                credit.CategoryName,
+                credit.CategoryType,
+                credit.Source,
+                credit.Notes ?? string.Empty
+            });
+            ConsoleTableUtility.Print(_console, headers, rows);
         }
 
         _console.WriteLine(string.Empty);
-        _console.WriteLine(AppConstants.Messages.BalanceSummaryDebitHeader);
+        _console.WriteLine(AppConstants.Messages.BalanceSummaryDebitHeader, ConsoleMessageKind.Title);
         if (summary.Debits.Count == 0)
         {
-            _console.WriteLine(AppConstants.Messages.NoBalanceDebits);
+            _console.WriteLine(AppConstants.Messages.NoBalanceDebits, ConsoleMessageKind.Muted);
         }
         else
         {
-            _console.WriteLine(AppConstants.Messages.BalanceSummaryDebitDetailHeader);
-            foreach (var debit in summary.Debits)
+            var headers = new[] { "Id", "Amount", "Date", "Category", "Type", "Description" };
+            var rows = summary.Debits.Select(debit => new[]
             {
-                _console.WriteLine(string.Format(
-                    AppConstants.Messages.BalanceSummaryDebitRowFormat,
-                    debit.Id,
-                    NumberFormatUtility.FormatIndian(debit.Amount),
-                    debit.Date.ToString(AppConstants.Formats.Date),
-                    debit.CategoryName,
-                    debit.CategoryType,
-                    debit.Description));
-            }
+                debit.Id.ToString(),
+                NumberFormatUtility.FormatIndian(debit.Amount),
+                debit.Date.ToString(AppConstants.Formats.Date),
+                debit.CategoryName,
+                debit.CategoryType,
+                debit.Description ?? string.Empty
+            });
+            ConsoleTableUtility.Print(_console, headers, rows);
         }
 
         _console.WriteLine(string.Empty);
-        _console.WriteLine(string.Format(AppConstants.Messages.BalanceSummaryTotalCreditFormat, NumberFormatUtility.FormatIndian(summary.TotalCredit)));
-        _console.WriteLine(string.Format(AppConstants.Messages.BalanceSummaryTotalDebitFormat, NumberFormatUtility.FormatIndian(summary.TotalDebit)));
-        _console.WriteLine(string.Format(AppConstants.Messages.BalanceSummaryBalanceFormat, NumberFormatUtility.FormatIndian(summary.Balance)));
+        _console.WriteLine(string.Format(AppConstants.Messages.BalanceSummaryTotalCreditFormat, NumberFormatUtility.FormatIndian(summary.TotalCredit)), ConsoleMessageKind.Highlight);
+        _console.WriteLine(string.Format(AppConstants.Messages.BalanceSummaryTotalDebitFormat, NumberFormatUtility.FormatIndian(summary.TotalDebit)), ConsoleMessageKind.Highlight);
+        _console.WriteLine(string.Format(AppConstants.Messages.BalanceSummaryBalanceFormat, NumberFormatUtility.FormatIndian(summary.Balance)), ConsoleMessageKind.Success);
     }
 
     private void PrintIncomeHierarchy(IncomeSummary summary)
     {
         if (summary.CategoryTypeSections.Count == 0)
         {
-            _console.WriteLine(AppConstants.Messages.NoIncome);
-            _console.WriteLine(string.Format(AppConstants.Messages.SummaryGrandTotalIncomeFormat, NumberFormatUtility.FormatIndian(summary.TotalIncome)));
+            _console.WriteLine(AppConstants.Messages.NoIncome, ConsoleMessageKind.Muted);
+            _console.WriteLine(string.Format(AppConstants.Messages.SummaryGrandTotalIncomeFormat, NumberFormatUtility.FormatIndian(summary.TotalIncome)), ConsoleMessageKind.Success);
             return;
         }
 
         foreach (var categoryTypeSection in summary.CategoryTypeSections)
         {
-            _console.WriteLine(string.Format(AppConstants.Messages.SummaryCategoryTypeHeader, categoryTypeSection.CategoryTypeName));
+            _console.WriteLine(string.Format(AppConstants.Messages.SummaryCategoryTypeHeader, categoryTypeSection.CategoryTypeName), ConsoleMessageKind.Title);
 
             foreach (var subCategorySection in categoryTypeSection.SubCategorySections)
             {
-                _console.WriteLine(string.Format(AppConstants.Messages.SummaryCategoryHeader, subCategorySection.CategoryName));
-                _console.WriteLine(AppConstants.Messages.SummaryIncomeDetailHeader);
+                _console.WriteLine(string.Format(AppConstants.Messages.SummaryCategoryHeader, subCategorySection.CategoryName), ConsoleMessageKind.Header);
+                _console.WriteLine(AppConstants.Messages.SummaryIncomeDetailHeader, ConsoleMessageKind.Header);
 
                 foreach (var incomeEntry in subCategorySection.IncomeEntries)
                 {
@@ -171,43 +187,43 @@ public sealed class SummaryUi(
                         NumberFormatUtility.FormatIndian(incomeEntry.Amount),
                         incomeEntry.Date.ToString(AppConstants.Formats.Date),
                         incomeEntry.Source,
-                        incomeEntry.Notes));
+                        incomeEntry.Notes), ConsoleMessageKind.Data);
                 }
 
                 _console.WriteLine(string.Format(
                     AppConstants.Messages.SummaryCategorySubtotalFormat,
                     subCategorySection.CategoryName,
-                    NumberFormatUtility.FormatIndian(subCategorySection.Subtotal)));
+                    NumberFormatUtility.FormatIndian(subCategorySection.Subtotal)), ConsoleMessageKind.Highlight);
                 _console.WriteLine(string.Empty);
             }
 
             _console.WriteLine(string.Format(
                 AppConstants.Messages.SummarySectionSubtotalFormat,
                 categoryTypeSection.CategoryTypeName,
-                NumberFormatUtility.FormatIndian(categoryTypeSection.SectionTotal)));
+                NumberFormatUtility.FormatIndian(categoryTypeSection.SectionTotal)), ConsoleMessageKind.Highlight);
             _console.WriteLine(string.Empty);
         }
 
-        _console.WriteLine(string.Format(AppConstants.Messages.SummaryGrandTotalIncomeFormat, NumberFormatUtility.FormatIndian(summary.TotalIncome)));
+        _console.WriteLine(string.Format(AppConstants.Messages.SummaryGrandTotalIncomeFormat, NumberFormatUtility.FormatIndian(summary.TotalIncome)), ConsoleMessageKind.Success);
     }
 
     private void PrintExpenseHierarchy(ExpenseSummary summary)
     {
         if (summary.CategoryTypeSections.Count == 0)
         {
-            _console.WriteLine(AppConstants.Messages.NoExpenses);
-            _console.WriteLine(string.Format(AppConstants.Messages.SummaryGrandTotalExpenseFormat, NumberFormatUtility.FormatIndian(summary.TotalExpense)));
+            _console.WriteLine(AppConstants.Messages.NoExpenses, ConsoleMessageKind.Muted);
+            _console.WriteLine(string.Format(AppConstants.Messages.SummaryGrandTotalExpenseFormat, NumberFormatUtility.FormatIndian(summary.TotalExpense)), ConsoleMessageKind.Success);
             return;
         }
 
         foreach (var categoryTypeSection in summary.CategoryTypeSections)
         {
-            _console.WriteLine(string.Format(AppConstants.Messages.SummaryCategoryTypeHeader, categoryTypeSection.CategoryTypeName));
+            _console.WriteLine(string.Format(AppConstants.Messages.SummaryCategoryTypeHeader, categoryTypeSection.CategoryTypeName), ConsoleMessageKind.Title);
 
             foreach (var subCategorySection in categoryTypeSection.SubCategorySections)
             {
-                _console.WriteLine(string.Format(AppConstants.Messages.SummaryCategoryHeader, subCategorySection.CategoryName));
-                _console.WriteLine(AppConstants.Messages.SummaryExpenseDetailHeader);
+                _console.WriteLine(string.Format(AppConstants.Messages.SummaryCategoryHeader, subCategorySection.CategoryName), ConsoleMessageKind.Header);
+                _console.WriteLine(AppConstants.Messages.SummaryExpenseDetailHeader, ConsoleMessageKind.Header);
 
                 foreach (var expenseEntry in subCategorySection.ExpenseEntries)
                 {
@@ -216,23 +232,23 @@ public sealed class SummaryUi(
                         expenseEntry.Id,
                         NumberFormatUtility.FormatIndian(expenseEntry.Amount),
                         expenseEntry.Date.ToString(AppConstants.Formats.Date),
-                        expenseEntry.Description));
+                        expenseEntry.Description), ConsoleMessageKind.Data);
                 }
 
                 _console.WriteLine(string.Format(
                     AppConstants.Messages.SummaryCategorySubtotalFormat,
                     subCategorySection.CategoryName,
-                    NumberFormatUtility.FormatIndian(subCategorySection.Subtotal)));
+                    NumberFormatUtility.FormatIndian(subCategorySection.Subtotal)), ConsoleMessageKind.Highlight);
                 _console.WriteLine(string.Empty);
             }
 
             _console.WriteLine(string.Format(
                 AppConstants.Messages.SummarySectionSubtotalFormat,
                 categoryTypeSection.CategoryTypeName,
-                NumberFormatUtility.FormatIndian(categoryTypeSection.SectionTotal)));
+                NumberFormatUtility.FormatIndian(categoryTypeSection.SectionTotal)), ConsoleMessageKind.Highlight);
             _console.WriteLine(string.Empty);
         }
 
-        _console.WriteLine(string.Format(AppConstants.Messages.SummaryGrandTotalExpenseFormat, NumberFormatUtility.FormatIndian(summary.TotalExpense)));
+        _console.WriteLine(string.Format(AppConstants.Messages.SummaryGrandTotalExpenseFormat, NumberFormatUtility.FormatIndian(summary.TotalExpense)), ConsoleMessageKind.Success);
     }
 }

@@ -5,6 +5,16 @@ public sealed record AddBudgetInput(
     decimal LimitAmount,
     decimal SpentAmount);
 
+public sealed record UpdateBudgetInput(
+    int Id,
+    int CategoryId,
+    decimal LimitAmount,
+    decimal SpentAmount);
+
+public sealed record BudgetListFilter(
+    int? CategoryId,
+    string? Keywords);
+
 public sealed record BudgetItem(
     int Id,
     decimal LimitAmount,
@@ -12,4 +22,5 @@ public sealed record BudgetItem(
     DateTime UpdatedAtUtc,
     int CategoryId,
     string CategoryName,
-    string CategoryType);
+    string CategoryType,
+    bool InActive);

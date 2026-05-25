@@ -8,5 +8,6 @@ public sealed class ExpenseResponseModel
     public string? Description { get; init; }
     public DateTime Date { get; init; }
     public DateTime CreatedAtUtc { get; init; }
+    public bool InActive { get; init; }
 }
 

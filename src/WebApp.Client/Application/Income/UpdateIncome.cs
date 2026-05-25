@@ -5,11 +5,11 @@ using WebApp.Client.Infrastructure.Session.Interfaces;
 
 namespace WebApp.Client.Application.Income;
 
-public sealed class ListIncome(IIncomeApi incomeApi, ISessionAccessor sessionAccessor) : IListIncome
+public sealed class UpdateIncome(IIncomeApi incomeApi, ISessionAccessor sessionAccessor) : IUpdateIncome
 {
-    public async Task<IReadOnlyList<IncomeItem>> ExecuteAsync(IncomeListFilter? filter, CancellationToken cancellationToken)
+    public async Task ExecuteAsync(UpdateIncomeInput input, CancellationToken cancellationToken)
     {
         var session = sessionAccessor.Current ?? throw new MustLoginException(AppConstants.Messages.MustLoginFirst);
-        return await incomeApi.GetByUserIdAsync(session.UserId, filter, cancellationToken);
+        await incomeApi.UpdateAsync(session.UserId, input, cancellationToken);
     }
 }

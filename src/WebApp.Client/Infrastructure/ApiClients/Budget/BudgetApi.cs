@@ -29,10 +29,26 @@ public sealed class BudgetApi(IHttpClientFactory httpClientFactory) : IBudgetApi
         await JsonHttp.EnsureSuccessAsync(response, cancellationToken);
     }
 
-    public async Task<IReadOnlyList<BudgetItem>> GetByUserIdAsync(int userId, CancellationToken cancellationToken)
+    public async Task UpdateAsync(int userId, UpdateBudgetInput input, CancellationToken cancellationToken)
+    {
+        var client = httpClientFactory.CreateClient(ApiHttpClientNames.Authenticated);
+        var path = RouteConstants.Budget.UpdateById.Replace(AppConstants.RoutePlaceholders.BudgetId, input.Id.ToString());
+        var request = new AddBudgetRequestModel
+        {
+            UserId = userId,
+            CategoryId = input.CategoryId,
+            LimitAmount = input.LimitAmount,
+            SpentAmount = input.SpentAmount
+        };
+        var response = await client.PutAsync(path, JsonHttp.CreateBody(request), cancellationToken);
+        await JsonHttp.EnsureSuccessAsync(response, cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<BudgetItem>> GetByUserIdAsync(int userId, BudgetListFilter? filter, CancellationToken cancellationToken)
     {
         var client = httpClientFactory.CreateClient(ApiHttpClientNames.Authenticated);
         var path = RouteConstants.Budget.GetByUserId.Replace(AppConstants.RoutePlaceholders.UserId, userId.ToString());
+        path = AppendFilterQuery(path, filter);
         var response = await client.GetAsync(path, cancellationToken);
         var payload = await JsonHttp.ReadOrThrowAsync<List<BudgetResponseModel>>(response, cancellationToken);
         return payload.Select(ToItem).ToArray();
@@ -46,6 +62,27 @@ public sealed class BudgetApi(IHttpClientFactory httpClientFactory) : IBudgetApi
         await JsonHttp.EnsureSuccessAsync(response, cancellationToken);
     }
 
+    private static string AppendFilterQuery(string path, BudgetListFilter? filter)
+    {
+        if (filter is null)
+        {
+            return path;
+        }
+
+        var queryParts = new List<string>();
+        if (filter.CategoryId is int categoryId)
+        {
+            queryParts.Add($"filter.CategoryId={categoryId}");
+        }
+
+        if (!string.IsNullOrWhiteSpace(filter.Keywords))
+        {
+            queryParts.Add($"filter.Keywords={Uri.EscapeDataString(filter.Keywords)}");
+        }
+
+        return queryParts.Count == 0 ? path : $"{path}?{string.Join("&", queryParts)}";
+    }
+
     private static BudgetItem ToItem(BudgetResponseModel budget) =>
         new(
             budget.Id,
@@ -54,5 +91,6 @@ public sealed class BudgetApi(IHttpClientFactory httpClientFactory) : IBudgetApi
             budget.UpdatedAtUtc,
             budget.Category.Id,
             budget.Category.Name,
-            budget.Category.CategoryType);
+            budget.Category.CategoryType,
+            budget.InActive);
 }
