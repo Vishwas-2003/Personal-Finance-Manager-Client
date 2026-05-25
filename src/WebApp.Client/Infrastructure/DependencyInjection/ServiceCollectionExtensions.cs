@@ -83,6 +83,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ISummaryApi, SummaryApi>();
         services.AddSingleton<IUserApi, UserApi>();
 
+        services.AddSingleton<IConsoleClearCoordinator, ConsoleClearCoordinator>();
         services.AddSingleton<IUiExceptionHandler, UiExceptionHandler>();
         services.AddSingleton<IAuthUi, AuthUi>();
         services.AddSingleton<IExpenseUi, ExpenseUi>();
@@ -94,12 +95,15 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ILogin, Login>();
         services.AddSingleton<ILogout, Logout>();
         services.AddSingleton<IAddExpense, AddExpense>();
+        services.AddSingleton<IUpdateExpense, UpdateExpense>();
         services.AddSingleton<IListExpenses, ListExpenses>();
         services.AddSingleton<IDeleteExpense, DeleteExpense>();
         services.AddSingleton<IAddIncome, AddIncome>();
+        services.AddSingleton<IUpdateIncome, UpdateIncome>();
         services.AddSingleton<IListIncome, ListIncome>();
         services.AddSingleton<IDeleteIncome, DeleteIncome>();
         services.AddSingleton<IAddBudget, AddBudget>();
+        services.AddSingleton<IUpdateBudget, UpdateBudget>();
         services.AddSingleton<IListBudget, ListBudget>();
         services.AddSingleton<IDeleteBudget, DeleteBudget>();
         services.AddSingleton<IListCategories, ListCategory>();

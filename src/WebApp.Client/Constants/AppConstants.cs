@@ -15,9 +15,9 @@ public static class AppConstants
     {
         public const string MainLoggedOut = "1) Register  2) Login  0) Exit";
         public const string MainLoggedIn = "1) Expenses  2) Income  3) Budget  4) Summary  5) Profile  6) Logout  0) Exit";
-        public const string Expense = "1) Add expense  2) List expenses  3) Delete expense  0) Back";
-        public const string Income = "1) Add income  2) List income  3) Delete income  0) Back";
-        public const string Budget = "1) Add budget  2) List budgets  3) Delete budget  0) Back";
+        public const string Expense = "1) Add expense  2) List expenses  3) Archive expense  4) Update expense  0) Back";
+        public const string Income = "1) Add income  2) List income  3) Archive income  4) Update income  0) Back";
+        public const string Budget = "1) Add budget  2) List budgets  3) Archive budget  4) Update budget  0) Back";
         public const string Summary = "1) Income summary  2) Expense summary  3) Balance summary  0) Back";
     }
 
@@ -48,16 +48,21 @@ public static class AppConstants
         public const string CategoryId = "Category id: ";
         public const string DescriptionOptional = "Description (optional): ";
         public const string Date = "Date (YYYY-MM-DD): ";
-        public const string ExpenseIdToDelete = "Expense id to delete: ";
+        public const string ExpenseIdToDelete = "Expense id to archive: ";
         public const string ExpenseFilterCategoryOptional = "Filter by category id (optional, leave blank to skip, 0 to view categories): ";
         public const string ExpenseFilterFromDateOptional = "Filter from date (optional, YYYY-MM-DD, leave blank to skip): ";
         public const string ExpenseFilterToDateOptional = "Filter to date (optional, YYYY-MM-DD, leave blank to skip): ";
-        public const string IncomeIdToDelete = "Income id to delete: ";
+        public const string SkipAllFilters = "Press Enter to skip all filters, or type anything to continue: ";
+        public const string KeywordFilterOptional = "Search keywords (space-separated, optional): ";
+        public const string IncomeIdToDelete = "Income id to archive: ";
+        public const string ExpenseIdToUpdate = "Expense id to update: ";
+        public const string IncomeIdToUpdate = "Income id to update: ";
+        public const string BudgetIdToUpdate = "Budget id to update: ";
         public const string IncomeSource = "Income source: ";
         public const string IncomeNotesOptional = "Notes (optional): ";
         public const string BudgetLimitAmount = "Budget limit amount (> 0): ";
         public const string BudgetSpentAmount = "Spent amount (0 if none): ";
-        public const string BudgetIdToDelete = "Budget id to delete: ";
+        public const string BudgetIdToDelete = "Budget id to archive: ";
     }
 
     public static class Messages
@@ -69,17 +74,23 @@ public static class AppConstants
         public const string ExpenseAdded = "Expense added.";
         public const string NoExpenses = "No expenses found.";
         public const string NoExpensesForFilter = "No expenses found for the selected filter(s).";
-        public const string ExpenseDeleted = "Expense deleted.";
+        public const string ExpenseDeleted = "Expense archived.";
+        public const string ExpenseUpdated = "Expense updated.";
+        public const string StatusActive = "Active";
+        public const string StatusArchived = "Archived";
         public const string ExpenseHeader = "Id | Amount | Category | Type | Date | Description";
         public const string ExpenseRowFormat = "{0} | {1} | {2} | {3} | {4} | {5}";
         public const string IncomeAdded = "Income added.";
         public const string NoIncome = "No income found.";
-        public const string IncomeDeleted = "Income deleted.";
+        public const string IncomeDeleted = "Income archived.";
+        public const string IncomeUpdated = "Income updated.";
         public const string IncomeHeader = "Id | Amount | Category | Type | Date | Source | Notes";
         public const string IncomeRowFormat = "{0} | {1} | {2} | {3} | {4} | {5} | {6}";
         public const string BudgetAdded = "Budget added.";
         public const string NoBudgets = "No budgets found.";
-        public const string BudgetDeleted = "Budget deleted.";
+        public const string BudgetDeleted = "Budget archived.";
+        public const string BudgetUpdated = "Budget updated.";
+        public const string FutureDateNotAllowed = "Date cannot be in the future.";
         public const string BudgetHeader = "Id | Limit | Spent | Category | Type | Updated (UTC)";
         public const string BudgetRowFormat = "{0} | {1} | {2} | {3} | {4} | {5}";
         public const string SummaryCategoryTypeHeader = "=== {0} (category) ===";
@@ -129,13 +140,19 @@ public static class AppConstants
         public const string UserProfileAddressFormat = "Address: {0}";
     }
 
+    public static class Commands
+    {
+        public const string ClearConsole = "clear";
+    }
+
     public static class Values
     {
+        public const int ClearDelaySeconds = 2;
         public const int MenuMinChoice = 0;
         public const int MainMenuMaxChoice = 6;
-        public const int ExpenseMenuMaxChoice = 3;
-        public const int IncomeMenuMaxChoice = 3;
-        public const int BudgetMenuMaxChoice = 3;
+        public const int ExpenseMenuMaxChoice = 4;
+        public const int IncomeMenuMaxChoice = 4;
+        public const int BudgetMenuMaxChoice = 4;
         public const int SummaryMenuMaxChoice = 3;
         public const int RegisterChoice = 1;
         public const int LoginChoice = 2;
@@ -148,12 +165,15 @@ public static class AppConstants
         public const int AddExpenseChoice = 1;
         public const int ListExpenseChoice = 2;
         public const int DeleteExpenseChoice = 3;
+        public const int UpdateExpenseChoice = 4;
         public const int AddIncomeChoice = 1;
         public const int ListIncomeChoice = 2;
         public const int DeleteIncomeChoice = 3;
+        public const int UpdateIncomeChoice = 4;
         public const int AddBudgetChoice = 1;
         public const int ListBudgetChoice = 2;
         public const int DeleteBudgetChoice = 3;
+        public const int UpdateBudgetChoice = 4;
         public const int IncomeSummaryChoice = 1;
         public const int ExpenseSummaryChoice = 2;
         public const int BalanceSummaryChoice = 3;

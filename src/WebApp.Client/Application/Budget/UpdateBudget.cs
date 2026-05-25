@@ -5,11 +5,11 @@ using WebApp.Client.Infrastructure.Session.Interfaces;
 
 namespace WebApp.Client.Application.Budget;
 
-public sealed class ListBudget(IBudgetApi budgetApi, ISessionAccessor sessionAccessor) : IListBudget
+public sealed class UpdateBudget(IBudgetApi budgetApi, ISessionAccessor sessionAccessor) : IUpdateBudget
 {
-    public async Task<IReadOnlyList<BudgetItem>> ExecuteAsync(BudgetListFilter? filter, CancellationToken cancellationToken)
+    public async Task ExecuteAsync(UpdateBudgetInput input, CancellationToken cancellationToken)
     {
         var session = sessionAccessor.Current ?? throw new MustLoginException(AppConstants.Messages.MustLoginFirst);
-        return await budgetApi.GetByUserIdAsync(session.UserId, filter, cancellationToken);
+        await budgetApi.UpdateAsync(session.UserId, input, cancellationToken);
     }
 }

@@ -7,6 +7,20 @@ public sealed record AddIncomeInput(
     string Source,
     string? Notes);
 
+public sealed record UpdateIncomeInput(
+    int Id,
+    decimal Amount,
+    int CategoryId,
+    DateTime Date,
+    string Source,
+    string? Notes);
+
+public sealed record IncomeListFilter(
+    int? CategoryId,
+    DateTime? FromDate,
+    DateTime? ToDate,
+    string? Keywords);
+
 public sealed record IncomeItem(
     int Id,
     decimal Amount,
@@ -16,5 +30,5 @@ public sealed record IncomeItem(
     DateTime Date,
     string Source,
     string? Notes,
-    DateTime CreatedAtUtc);
-
+    DateTime CreatedAtUtc,
+    bool InActive);

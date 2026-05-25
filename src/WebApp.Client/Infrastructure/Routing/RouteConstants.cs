@@ -13,6 +13,7 @@ public static class RouteConstants
     {
         public const string Add = "/api/Expense/add";
         public const string GetByUserId = "/api/Expense/get/{userId}";
+        public const string UpdateById = "/api/Expense/update/{expenseId}";
         public const string DeleteById = "/api/Expense/delete/{expenseId}";
     }
 
@@ -20,6 +21,7 @@ public static class RouteConstants
     {
         public const string Add = "/api/Income/add";
         public const string GetByUserId = "/api/Income/get/{userId}";
+        public const string UpdateById = "/api/Income/update/{incomeId}";
         public const string DeleteById = "/api/Income/delete/{incomeId}";
     }
 
@@ -27,6 +29,7 @@ public static class RouteConstants
     {
         public const string Add = "/api/Budget/add";
         public const string GetByUserId = "/api/Budget/get/{userId}";
+        public const string UpdateById = "/api/Budget/update/{budgetId}";
         public const string DeleteById = "/api/Budget/delete/{budgetId}";
     }
 

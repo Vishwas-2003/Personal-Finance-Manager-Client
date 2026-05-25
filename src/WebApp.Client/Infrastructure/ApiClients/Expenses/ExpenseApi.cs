@@ -29,6 +29,22 @@ public sealed class ExpenseApi(IHttpClientFactory httpClientFactory) : IExpenseA
         await JsonHttp.EnsureSuccessAsync(response, cancellationToken);
     }
 
+    public async Task UpdateAsync(int userId, UpdateExpenseInput input, CancellationToken cancellationToken)
+    {
+        var client = httpClientFactory.CreateClient(ApiHttpClientNames.Authenticated);
+        var path = RouteConstants.Expense.UpdateById.Replace(AppConstants.RoutePlaceholders.ExpenseId, input.Id.ToString());
+        var request = new AddExpenseRequestModel
+        {
+            UserId = userId,
+            Amount = input.Amount,
+            CategoryId = input.CategoryId,
+            Description = input.Description,
+            Date = input.Date
+        };
+        var response = await client.PutAsync(path, JsonHttp.CreateBody(request), cancellationToken);
+        await JsonHttp.EnsureSuccessAsync(response, cancellationToken);
+    }
+
     public async Task<IReadOnlyList<ExpenseItem>> GetByUserIdAsync(int userId, ExpenseListFilter? filter, CancellationToken cancellationToken)
     {
         var client = httpClientFactory.CreateClient(ApiHttpClientNames.Authenticated);
@@ -70,18 +86,23 @@ public sealed class ExpenseApi(IHttpClientFactory httpClientFactory) : IExpenseA
             queryParts.Add($"filter.ToDate={Uri.EscapeDataString(toDate.ToString(AppConstants.Formats.Date))}");
         }
 
+        if (!string.IsNullOrWhiteSpace(filter.Keywords))
+        {
+            queryParts.Add($"filter.Keywords={Uri.EscapeDataString(filter.Keywords)}");
+        }
+
         return queryParts.Count == 0 ? path : $"{path}?{string.Join("&", queryParts)}";
     }
 
-    private static ExpenseItem ToItem(ExpenseResponseModel r) =>
+    private static ExpenseItem ToItem(ExpenseResponseModel response) =>
         new(
-            r.Id,
-            r.Amount,
-            r.Category.Id,
-            r.Category.Name,
-            r.Category.CategoryType,
-            r.Description,
-            r.Date,
-            r.CreatedAtUtc);
+            response.Id,
+            response.Amount,
+            response.Category.Id,
+            response.Category.Name,
+            response.Category.CategoryType,
+            response.Description,
+            response.Date,
+            response.CreatedAtUtc,
+            response.InActive);
 }
-

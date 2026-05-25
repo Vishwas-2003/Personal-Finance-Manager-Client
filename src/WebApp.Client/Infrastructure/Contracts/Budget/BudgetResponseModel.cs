@@ -6,5 +6,6 @@ public sealed class BudgetResponseModel
     public decimal LimitAmount { get; init; }
     public decimal SpentAmount { get; init; }
     public DateTime UpdatedAtUtc { get; init; }
+    public bool InActive { get; init; }
     public BudgetCategoryResponseModel Category { get; init; } = new();
 }

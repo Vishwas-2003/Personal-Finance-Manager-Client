@@ -6,7 +6,18 @@ public sealed record AddExpenseInput(
     string? Description,
     DateTime Date);
 
-public sealed record ExpenseListFilter(int? CategoryId, DateTime? FromDate, DateTime? ToDate);
+public sealed record UpdateExpenseInput(
+    int Id,
+    decimal Amount,
+    int CategoryId,
+    string? Description,
+    DateTime Date);
+
+public sealed record ExpenseListFilter(
+    int? CategoryId,
+    DateTime? FromDate,
+    DateTime? ToDate,
+    string? Keywords);
 
 public sealed record ExpenseItem(
     int Id,
@@ -16,5 +27,5 @@ public sealed record ExpenseItem(
     string CategoryType,
     string? Description,
     DateTime Date,
-    DateTime CreatedAtUtc);
-
+    DateTime CreatedAtUtc,
+    bool InActive);

@@ -21,7 +21,8 @@ public sealed class App(
     IBudgetUi budgetUi,
     ISummaryUi summaryUi,
     IUserUi userUi,
-    IUiExceptionHandler exceptionHandler)
+    IUiExceptionHandler exceptionHandler,
+    IConsoleClearCoordinator consoleClearCoordinator)
 {
     private readonly IConsole _console = new SystemConsole();
     private InputReader Input => new(_console);
@@ -30,18 +31,21 @@ public sealed class App(
     {
         await LoadSessionAsync();
 
-        _console.WriteLine(AppConstants.Titles.AppName);
-        _console.WriteLine(AppConstants.Titles.AppDivider);
+        _console.WriteLine(AppConstants.Titles.AppName, ConsoleMessageKind.Title);
+        _console.WriteLine(AppConstants.Titles.AppDivider, ConsoleMessageKind.Muted);
 
         while (true)
         {
-            var isLoggedIn = sessionAccessor.Current is not null;
-            _console.WriteLine(string.Empty);
-            _console.WriteLine(isLoggedIn ? AppConstants.Menus.MainLoggedIn : AppConstants.Menus.MainLoggedOut);
-            var choice = Input.RequiredInt(AppConstants.Prompts.ChooseOption, AppConstants.Values.MenuMinChoice, AppConstants.Values.MainMenuMaxChoice);
+            PrintMainMenu();
+            var choice = Input.RequiredMenuChoice(
+                AppConstants.Prompts.ChooseOption,
+                AppConstants.Values.MenuMinChoice,
+                AppConstants.Values.MainMenuMaxChoice,
+                ClearAndRedrawMainMenu);
 
             try
             {
+                var isLoggedIn = sessionAccessor.Current is not null;
                 if (!isLoggedIn)
                 {
                     var exit = await authUi.RunAsync(choice);
@@ -71,7 +75,7 @@ public sealed class App(
                         break;
                     case AppConstants.Values.LogoutChoice:
                         await logout.ExecuteAsync(CancellationToken.None);
-                        _console.WriteLine(AppConstants.Messages.LoggedOut);
+                        _console.WriteLine(AppConstants.Messages.LoggedOut, ConsoleMessageKind.Info);
                         break;
                     default: return;
                 }
@@ -84,6 +88,19 @@ public sealed class App(
                 }
             }
         }
+    }
+
+    private void PrintMainMenu()
+    {
+        var isLoggedIn = sessionAccessor.Current is not null;
+        _console.WriteLine(string.Empty);
+        _console.WriteLine(isLoggedIn ? AppConstants.Menus.MainLoggedIn : AppConstants.Menus.MainLoggedOut, ConsoleMessageKind.Menu);
+    }
+
+    private void ClearAndRedrawMainMenu()
+    {
+        consoleClearCoordinator.ClearScreen();
+        PrintMainMenu();
     }
 
     private async Task LoadSessionAsync()
